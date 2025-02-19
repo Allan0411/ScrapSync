@@ -3,6 +3,7 @@ import { useState } from "react";
 import { app } from "../firebase"
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { db } from "../firebase";
+import { useNavigate } from "react-router-dom";
 import {
     collection,
     getDocs,
@@ -15,10 +16,11 @@ import {
 
 const auth = getAuth(app);
 export default function () {
+     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const profileCollection = collection(db, "Profile");
-
+    
 const createUser = async () => { 
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -29,7 +31,7 @@ const createUser = async () => {
             Password: password, 
         });
 
-        alert("User signed up & data stored!");
+        navigate("/Home");
     } catch (error) {
         console.error("Error:", error.message);
     }

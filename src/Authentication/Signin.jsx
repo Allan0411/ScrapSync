@@ -2,15 +2,17 @@ import React from "react";
 import { useState } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { app } from "../firebase";
-
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 const auth = getAuth(app);
 
 export default function Sign() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+ const navigate = useNavigate();
     const signinUser=() => {
-        signInWithEmailAndPassword(auth, email, password).then(value => console.log("Signin Success")
+        signInWithEmailAndPassword(auth, email, password).then(value => navigate("/Home")
         ).catch(err => console.log(err));
     }
   return (
@@ -34,7 +36,10 @@ export default function Sign() {
             />
         </div>
         <button type="submit">Sign Up</button>
-    </form>
+          </form>
+          <p>
+                Don't have an account? <Link to="/Signup" className="signup-link">Sign Up</Link>
+            </p>
     </div>
   )
 }
