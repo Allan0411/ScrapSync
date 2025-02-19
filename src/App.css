@@ -1,70 +1,76 @@
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
+
 #root {
-  margin: 0;
-  padding: 0;
+  width: 100%;
+  height: 100%;
 }
+
 html,
 body {
-  margin: 0;
-  padding: 0;
-}
-.signup-page,
-.signin-page {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100vw;
+  background-color: #f5f5f5;
+}
+
+.signup-page,
+.signin-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
-  flex-direction: column;
+  width: 100%;
 }
 
 .signup-content,
 .signin-content {
-  border: 1px solid black;
-  width: 30vw;
-  align-content: center;
-  justify-items: center;
+  max-width: 400px;
+  width: 90%;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
   display: flex;
+  border: 1px solid black;
   flex-direction: column;
-  justify-content: center;
   gap: 1rem;
 }
-input:focus {
-  outline: none;
-}
 
-input[type="email"] {
-  all: unset;
-  outline: none;
-  border: 1px solid black;
-}
-
-input[type="password"] {
-  all: unset;
-  outline: none;
-  border: 1px solid black;
-}
-.signup-content h1,
-.signin-content h1 {
-  align-self: center;
-}
-.signup-email,
-.signin-email {
+input {
   width: 100%;
-  justify-content: space-around;
-  display: flex;
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 5px;
+  font-size: 16px;
 }
 
+.signup-email,
+.signin-email,
 .signup-password,
 .signin-password {
   width: 100%;
-  justify-content: space-around;
   display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+h1 {
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .signup-content,
+  .signin-content {
+    width: 95%;
+    padding: 15px;
+  }
+}
+
+.signin-content p {
+  align-self: center;
 }

@@ -35,11 +35,12 @@ export default function Sign() {
                 required 
             />
         </div>
-        <button type="submit">Sign Up</button>
-          </form>
-          <p>
+              <button type="submit">Sign Up</button>
+                   <p>
                 Don't have an account? <Link to="/Signup" className="signup-link">Sign Up</Link>
-            </p>
+                    </p>
+          </form>
+     
     </div>
   )
 }

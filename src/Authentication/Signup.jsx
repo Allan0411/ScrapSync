@@ -20,7 +20,7 @@ export default function () {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const profileCollection = collection(db, "Profile");
-    
+
 const createUser = async () => { 
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -36,7 +36,6 @@ const createUser = async () => {
         console.error("Error:", error.message);
     }
 };
-
 
   return (
 <div className="signup-page">
