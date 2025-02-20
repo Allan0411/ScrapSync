@@ -43,18 +43,18 @@ export default function Chat() {
         }
     }
     return (
-        <div>
-            <h2 className="chat_title">Welcome to {roomName}</h2>
+    <div className="chat-container">
+        <h2 className="chat_title">Welcome to {roomName}</h2>
 
-            {/* Chat Messages */}
-            <div className="chat-box">
-                {messages.map((msg) => (
-                    <p key={msg.id}><strong>{msg.sender}: </strong>{msg.text} </p>
-                
-                ))}
-            </div>
+        {/* Chat Messages */}
+        <div className="chat-box">
+            {messages.map((msg) => (
+                <p key={msg.id}><strong>{msg.sender}: </strong>{msg.text}</p>
+            ))}
+        </div>
 
-            {/* Input for sending messages */}
+        {/* Input for sending messages */}
+        <div className="input-container">
             <input 
                 type="text" 
                 value={message} 
@@ -64,5 +64,7 @@ export default function Chat() {
             />
             <button onClick={handleSendMessage}>Send</button>
         </div>
-    );
+    </div>
+);
+
 }

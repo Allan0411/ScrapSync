@@ -1,12 +1,52 @@
-input{
-    
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full height */
+    width: 100%;
+    overflow: hidden;
 }
 
-.chat-box{
-    width: 90%;
-    padding: 8px;
+.chat-box {
+    flex: 1;
+    overflow-y: auto; /* Enable scrolling */
+    padding: 10px;
+    background-color: #f9f9f9; /* Light background */
 }
+
+.input-container {
+    display: flex;
+    align-items: center;
+    padding: 11px;
+    background-color: #E5DDD9;
+    border-top: 1px solid #ddd; /* Separator */
+    position: static;
+    bottom: 0;
+    width: 100%;
+}
+
+.input-container input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.input-container button {
+    margin-left: 10px;
+    padding: 10px 15px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
 
 .chat_title{
     text-align: center  ;
+    padding-bottom: 25px;
+
 }
