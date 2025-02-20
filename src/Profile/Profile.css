@@ -1,0 +1,115 @@
+body {
+    background: linear-gradient(to bottom right, #E2DAD6, #F5EDED);
+    font-family: 'Helvetica Neue', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  .profile-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    
+  }
+  
+  .profile-container {
+    background: #ffffff;
+    padding: 2vh 2vw; /* Adjust padding to make it smaller */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 70vw; /* Adjust width to make it smaller */
+    max-width: 40vw; /* Adjust max-width to make it smaller */
+    text-align: center;
+    min-height: 45vh; /* Adjust min-height to make it smaller */
+  }
+  
+  
+  .profile-picture {
+    width: 10vw;
+    height: 10vw;
+    border-radius: 50%;
+    background: linear-gradient(to right, #6482AD, #7FA1C3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 6rem;
+    color: white;
+    font-weight: bold;
+    margin: 0 auto 20px;
+  }
+  
+  .form-container {
+    margin-top: 5vh;
+  }
+  
+  .form-group {
+    margin-bottom: 4vh;
+  }
+  
+  .form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 2vh;
+    text-align: left;
+    color: #333;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 2vh;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 2vh;
+    font-size: 1rem;
+    background-color: #F5EDED;
+  }
+  
+  .form-group button {
+    width: 100%;
+    padding: 2vh;
+    background: #6482AD;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s, transform 0.3s;
+  }
+  
+  .form-group button:hover {
+    background: #7FA1C3;
+    transform: translateY(-2px);
+  }
+  
+  .sign-out-button,
+  .delete-account-button {
+    width: 100%;
+    padding: 2vh;
+    margin-top: 2vh;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .sign-out-button {
+    background: #E2DAD6;
+    color: #ffffff;
+  }
+  
+  .sign-out-button:hover {
+    background: #6482AD;
+    transform: translateY(-2px);
+  }
+  
+  .delete-account-button {
+    background: #ff8a80;
+    color: #ffffff;
+  }
+  
+  .delete-account-button:hover {
+    background: #ff5252;
+    transform: translateY(-2px);
+  }

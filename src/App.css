@@ -104,6 +104,12 @@ ul {
   border: none;
   height: 6vh;
 }
+.signup-page button:active, .signin-page button:active{
+ color: #72BF78;
+  background-color: white;
+  border: 1px solid #72BF78;
+}
+
 .nv {
   color: #f4dfac;
   text-decoration: none;

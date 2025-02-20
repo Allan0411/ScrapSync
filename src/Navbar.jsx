@@ -11,6 +11,7 @@ export default function Navbar() {
               <li>
                   <NavLink to="/Profile" className={"nv"}>Profile</NavLink>
               </li>
+            
           </ul>
    </nav>
  )

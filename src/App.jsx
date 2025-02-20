@@ -5,23 +5,28 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 import Home from "./home";
 import Navbar from "./Navbar";
 import Profile from "./Profile";
+import { useState } from "react";
+import { createContext } from "react";
+
+export const AuthContext = createContext(null);
 function Layout() {
+  const [user, setUser] = useState(null); // Move useState here
   const location = useLocation();
   const hideNavbar = location.pathname === "/Signin" || location.pathname === "/Signup";
+
   return (
-    <>
+    <AuthContext.Provider value={{ user, setUser }}>
       {!hideNavbar && <Navbar />}
       <Routes>
-        <Route path="/" element={<Navigate to="/Signin" />} />
-        <Route path="/Signin" element={<Signin />} />
-        <Route path="/Signup" element={<Signup />} />
-        <Route path="/Home" element={<Home />} />
-        <Route path="/Profile" element={<Profile />} />
+        <Route path="/" element={<Navigate to={user ? "/Home" : "/Signin"} />} />
+        <Route path="/Signin" element={user ? <Navigate to="/Home" /> : <Signin setUser={setUser} />} />
+        <Route path="/Signup" element={user ? <Navigate to="/Home" /> : <Signup />} />
+        <Route path="/Home" element={user ? <Home /> : <Navigate to="/Signin" />} />
+        <Route path="/Profile" element={user ? <Profile /> : <Navigate to="/Signin" />} />
       </Routes>
-    </>
+    </AuthContext.Provider>
   );
 }
-
 function App() {
   return (
     <BrowserRouter>

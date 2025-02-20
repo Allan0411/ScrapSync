@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react"
+import Profile from "../Profile";
 import {
     collection,
     getDocs,
@@ -17,21 +18,22 @@ import {
 
 const auth = getAuth(app);
 export default function () {
-     const navigate = useNavigate();
+
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const profileCollection = collection(db, "Profile");
-
+    const [name, setName] = useState("");
 const createUser = async () => { 
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-
         await addDoc(profileCollection, {
-            Email: email, 
+            Name: name, // sname
+            Email: email,
             Password: password, 
         });
-        navigate("/Signin");
+        navigate("/Profile", {state:{password: password, name:name}});
     } catch (error) {
        alert("Error:"+error.message);
     }
@@ -43,7 +45,17 @@ const createUser = async () => {
           initial={{ opacity: 0, y: -50 }} 
                 animate={{ opacity: 1, y: 0 }}  
                 transition={{duration: 1.5}}> 
-        <h1>Sign Up</h1>
+              <h1>Sign Up</h1>
+              <div className="signup-name"> {/* sname */}
+                 <input
+                type="text"
+                autoComplete="off"
+                placeholder="Enter your name"
+                onChange={(e) => setName(e.target.value)}
+                value={name}
+                 required
+  />
+</div>
         <div className="signup-email">
             {/* <h3>Email</h3> */}
             <input type="email" autoComplete="off" placeholder="Enter your email id" 
