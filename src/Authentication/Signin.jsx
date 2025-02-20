@@ -22,7 +22,7 @@ export default function Signin({ setUser }) {
         }
     }, [user, navigate]);
 const signinUser = () => {
-    setIsLoading(true);
+c
     signInWithEmailAndPassword(auth, email, password)
         .then(value => {
             setUser(value.user);
