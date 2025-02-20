@@ -6,6 +6,7 @@ import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react"
 import Profile from "../Profile";
+import { Spinner } from "react-spinner-toolkit";
 import {
     collection,
     getDocs,
@@ -18,7 +19,7 @@ import {
 
 const auth = getAuth(app);
 export default function () {
-
+  const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -26,6 +27,7 @@ export default function () {
     const [name, setName] = useState("");
 const createUser = async () => { 
     try {
+        setIsLoading(true);
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         await addDoc(profileCollection, {
@@ -37,10 +39,21 @@ const createUser = async () => {
     } catch (error) {
        alert("Error:"+error.message);
     }
+    finally {
+         setIsLoading(false);
+    }
 };
 
-  return (
-<div className="signup-page">
+    return isLoading ? (
+              <div className="spinner"> <Spinner
+        size={80}
+        color="#72bf78"
+        loading={true}
+        animationType="spin"
+            shape="circle"
+      /></div>
+    ):(
+    <div className="signup-page">
           <motion.form className="signup-content" onSubmit={(e) => { e.preventDefault(); createUser(); }}
           initial={{ opacity: 0, y: -50 }} 
                 animate={{ opacity: 1, y: 0 }}  
