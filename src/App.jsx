@@ -5,17 +5,26 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 import Home from "./home";
 import Navbar from "./Navbar";
 import Profile from "./Profile";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { createContext } from "react";
-
+import React from 'react'
+import { getUser } from "./getUser";
 export const AuthContext = createContext(null);
+
 function Layout() {
-  const [user, setUser] = useState(null); // Move useState here
+  const [user, setUser] = useState(null);
+  const [data, setData] = useState(null);
   const location = useLocation();
   const hideNavbar = location.pathname === "/Signin" || location.pathname === "/Signup";
+  useEffect(() => {
+    if (user?.email) {
+      getUser(user.email).then(setData);
+    }
+  }, [user]);
+
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, data }}>
       {!hideNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Navigate to={user ? "/Home" : "/Signin"} />} />

@@ -24,6 +24,7 @@ export default function Signin({ setUser }) {
         signInWithEmailAndPassword(auth, email, password)
             .then(value => {
                 setUser(value.user);
+                console.log(value.user);
                 navigate("/Home");
             })
             .catch(err => console.log(err));

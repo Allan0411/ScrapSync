@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
-import { AuthContext } from "./App"; 
+import { AuthContext } from "./App";
 
 export default function Home() {
-    const { user } = useContext(AuthContext); 
+    const { user } = useContext(AuthContext);  
 
     return (
         <div>
-          Home
+          home
         </div>
     );
 }

@@ -2,12 +2,16 @@ import React, { useState, useEffect, useContext } from 'react';
 import '../src/Profile/Profile.css'; 
 import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from './App';
+
+
+
 const ProfileScreen = () => {
-  const { user, setUser } = useContext(AuthContext);
+  const { user, data } = useContext(AuthContext);
+  console.log(data);
   const location = useLocation();
   const navigate = useNavigate();
-  const initialName = user?.name || "";
-  const initialPassword = user?.password || ""; // Get initial name from state
+  const initialName = user?.Name || "";
+  const initialPassword = user?.Password || ""; // Get initial name from state
   const [name, setName] = useState(initialName);
   const [newPassword, setNewPassword] = useState(initialPassword);
   const [confirmPassword, setConfirmPassword] = useState(initialPassword);  // Set initial password
@@ -113,6 +117,8 @@ const ProfileScreen = () => {
         </div>
       </div>
     </div>
+
+
   );
 };
 
