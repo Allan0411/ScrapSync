@@ -16,7 +16,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #E5ECEC;;
+  background-color: #e5ecec;
 }
 
 .signup-page,
@@ -30,12 +30,11 @@ body {
   align-items: center;
   height: 100vh;
   width: 100%;
-
 }
 
 .signup-content,
 .signin-content {
-   background-color: white;
+  background-color: white;
   max-width: 400px;
   width: 90%;
   padding: 20px;
@@ -48,7 +47,7 @@ body {
 input {
   border: none;
   outline: none;
-  background-color: #E5ECEC;
+  background-color: #e5ecec;
   width: 100%;
   padding: 10px;
   border-radius: 5px;
@@ -96,21 +95,36 @@ ul {
   margin-bottom: 2rem;
 }
 
-
-.signup-page button, .signin-page button{
-  background-color: #72BF78;
+.signup-page button,
+.signin-page button {
+  background-color: #72bf78;
   color: white;
   outline: none;
   border: none;
   height: 6vh;
 }
-.signup-page button:active, .signin-page button:active{
- color: #72BF78;
+.signup-page button:active,
+.signin-page button:active {
+  color: #72bf78;
   background-color: white;
-  border: 1px solid #72BF78;
+  border: 1px solid #72bf78;
 }
 
 .nv {
   color: #f4dfac;
   text-decoration: none;
+}
+
+.p {
+  width: 100px;
+  height: 200px;
+  background-color: black;
+}
+
+.spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
 }

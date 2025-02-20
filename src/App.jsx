@@ -26,13 +26,15 @@ function Layout() {
   return (
     <AuthContext.Provider value={{ user, setUser, data }}>
       {!hideNavbar && <Navbar />}
+      {/* <React.Suspense fallback={<p className="p">Loading...</p>}> */}
       <Routes>
         <Route path="/" element={<Navigate to={user ? "/Home" : "/Signin"} />} />
         <Route path="/Signin" element={user ? <Navigate to="/Home" /> : <Signin setUser={setUser} />} />
         <Route path="/Signup" element={user ? <Navigate to="/Home" /> : <Signup />} />
         <Route path="/Home" element={user ? <Home /> : <Navigate to="/Signin" />} />
         <Route path="/Profile" element={user ? <Profile /> : <Navigate to="/Signin" />} />
-      </Routes>
+        </Routes>
+        {/* </React.Suspense> */}
     </AuthContext.Provider>
   );
 }
