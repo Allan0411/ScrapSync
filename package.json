@@ -13,7 +13,8 @@
     "firebase": "^11.3.1",
     "motion": "^12.4.5",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-spinner-toolkit": "^1.0.31"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

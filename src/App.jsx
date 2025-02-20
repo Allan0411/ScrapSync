@@ -27,6 +27,7 @@ function Layout() {
   return (
     <AuthContext.Provider value={{ user, setUser, data }}>
       {!hideNavbar && <Navbar />}
+      {/* <React.Suspense fallback={<p className="p">Loading...</p>}> */}
       <Routes>
         <Route path="/" element={<Navigate to={user ? "/Home" : "/Signin"} />} />
         <Route path="/Signin" element={user ? <Navigate to="/Home" /> : <Signin setUser={setUser} />} />
@@ -36,6 +37,7 @@ function Layout() {
         <Route path="/Community" element={user ? <Community /> : <Navigate to="/Signin" />} />
         <Route path="/chat/:roomName" element={user ? <Chat /> : <Navigate to="/Signin" />} />
      </Routes>
+        {/* </React.Suspense> */}
     </AuthContext.Provider>
   );
 }
