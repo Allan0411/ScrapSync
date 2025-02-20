@@ -4,6 +4,7 @@ import { app } from "../firebase"
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { motion } from "motion/react"
 import {
     collection,
     getDocs,
@@ -30,19 +31,21 @@ const createUser = async () => {
             Email: email, 
             Password: password, 
         });
-
-        navigate("/Home");
+        navigate("/Signin");
     } catch (error) {
-        console.error("Error:", error.message);
+       alert("Error:"+error.message);
     }
 };
 
   return (
 <div className="signup-page">
-    <form className="signup-content" onSubmit={(e) => { e.preventDefault(); createUser(); }}>
+          <motion.form className="signup-content" onSubmit={(e) => { e.preventDefault(); createUser(); }}
+          initial={{ opacity: 0, y: -50 }} 
+                animate={{ opacity: 1, y: 0 }}  
+                transition={{duration: 1.5}}> 
         <h1>Sign Up</h1>
         <div className="signup-email">
-            <h3>Email</h3>
+            {/* <h3>Email</h3> */}
             <input type="email" autoComplete="off" placeholder="Enter your email id" 
                 onChange={(e) => setEmail(e.target.value)} 
                 value={email} 
@@ -50,7 +53,7 @@ const createUser = async () => {
             />
         </div>
         <div className="signup-password">
-            <h3>Password</h3>
+            {/* <h3>Password</h3> */}
             <input type="password" autoComplete="off" placeholder="Enter your password" 
                 onChange={(e) => setPassword(e.target.value)} 
                 value={password} 
@@ -58,7 +61,7 @@ const createUser = async () => {
             />
         </div>
         <button type="submit">Sign Up</button>
-    </form>
+    </motion.form>
 </div>
 
   )
