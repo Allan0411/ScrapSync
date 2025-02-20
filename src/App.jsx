@@ -10,7 +10,8 @@ import { createContext } from "react";
 import React from 'react'
 import { getUser } from "./getUser";
 export const AuthContext = createContext(null);
-
+import Chat from './Chat';
+import Community from './Community'
 function Layout() {
   const [user, setUser] = useState(null);
   const [data, setData] = useState(null);
@@ -32,7 +33,9 @@ function Layout() {
         <Route path="/Signup" element={user ? <Navigate to="/Home" /> : <Signup />} />
         <Route path="/Home" element={user ? <Home /> : <Navigate to="/Signin" />} />
         <Route path="/Profile" element={user ? <Profile /> : <Navigate to="/Signin" />} />
-      </Routes>
+        <Route path="/Community" element={user ? <Community /> : <Navigate to="/Signin" />} />
+        <Route path="/chat/:roomName" element={user ? <Chat /> : <Navigate to="/Signin" />} />
+     </Routes>
     </AuthContext.Provider>
   );
 }

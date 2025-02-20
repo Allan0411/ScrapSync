@@ -9,6 +9,9 @@ export default function Navbar() {
                   <NavLink to="/Home" className={"nv"}>Home</NavLink>
               </li>
               <li>
+                <NavLink to="/Community" className={"nv"}>Community</NavLink>
+              </li>
+              <li>
                   <NavLink to="/Profile" className={"nv"}>Profile</NavLink>
               </li>
             
