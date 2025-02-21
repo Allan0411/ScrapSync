@@ -7,6 +7,7 @@ import { motion } from "motion/react";
 import { AuthContext } from "../App";
 import { div } from "motion/react-client";
 import { Spinner } from "react-spinner-toolkit";
+import Hand from "../hand";
 const auth = getAuth(app);
 
 export default function Signin({ setUser }) {  
@@ -35,37 +36,43 @@ setIsLoading(true);
 
 
     return isLoading ? (
-        <div className="spinner"> <Spinner
-        size={80}
-        color="#72bf78"
-        loading={true}
-        animationType="spin"
-            shape="circle"
-      /></div>
+        // <div className="spinner"> <Spinner
+        // size={80}
+        // color="#72bf78"
+        // loading={true}
+        // animationType="spin"
+        //     shape="circle"
+        //   /></div>
+        <div className="spinner">
+<Hand/>
+
+            </div>
         ):(
         <div className="signin-page">
             <motion.form className="signin-content"  onSubmit={(e) => {
                 e.preventDefault();
                 signinUser();
-            }} initial={{ opacity: 0, y: -50 }} 
-                animate={{ opacity: 1, y: 0 }}  
-                transition={{duration: 1.75}} >  
+            }} initial={{scale: 0 }} 
+                    animate={{ scale: 1 }}   
+                >  
                 <h1>Sign In</h1>
                 <div className="signin-email">
-                    <input type="email" autoComplete="off" placeholder="Enter your email id" 
+                    <motion.input type="email" autoComplete="off" placeholder="Enter your email id" 
                         onChange={(e) => setEmail(e.target.value)} 
                         value={email} 
-                        required 
+                            required 
+                               whileFocus={{scale:1.05}}
                     />
                 </div>
                 <div className="signin-password">
-                    <input type="password" autoComplete="off" placeholder="Enter your password" 
+                    <motion.input type="password" autoComplete="off" placeholder="Enter your password" 
                         onChange={(e) => setPassword(e.target.value)} 
                         value={password} 
-                        required 
+                            required 
+                               whileFocus={{scale:1.05}}
                     />
                 </div>
-                <button type="submit">Sign In</button>
+                <motion.button type="submit"  whileTap={{scale:0.9}} whileHover={{scale:1.05}}>Sign In</motion.button>
                 <p>
                     Don't have an account? <Link to="/Signup" className="signup-link">Sign Up</Link>
                 </p>

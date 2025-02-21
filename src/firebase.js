@@ -4,6 +4,7 @@ import { Firestore, getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAnalytics } from "firebase/analytics";
 import "firebase/storage"
+import { getMessaging, getToken } from "firebase/messaging";
 // import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -26,3 +27,15 @@ export const db = getFirestore(app);
 export const storage = getStorage(app);
 const analytics = getAnalytics(app);
 // const analytics = getAnalytics(app);
+export const messaging = getMessaging(app);
+
+export const generateToken = async () => {
+  const permission = await Notification.requestPermission();
+  console.log(permission);
+  if (permission === "granted") {
+    const token = await getToken(messaging, {
+      vapidKey: "BCqQHXeZZH58EYvSVxgdzyVYLC78Q9tuv5SdjSRYfvAqg-BAGPQpKAoCogdFUQh1s1iqZAixqgnjF9GpFI_BfEk",
+    });
+    console.log(token);
+  }
+};

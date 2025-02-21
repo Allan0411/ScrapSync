@@ -16,7 +16,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #e5ecec;
+  overflow-x: hidden;
 }
 
 .signup-page,
@@ -29,6 +29,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  background-color: #a8d1b3;
   width: 100%;
 }
 
@@ -83,8 +84,10 @@ ul {
   list-style-type: none;
 }
 .navigation {
-  background-color: black;
-  color: white;
+  background-color: white;
+  color: black;
+  /* position: relative; */
+  width: 100vw;
 }
 
 .navigation ul {
@@ -111,7 +114,7 @@ ul {
 }
 
 .nv {
-  color: #f4dfac;
+  color: green;
   text-decoration: none;
 }
 
@@ -127,4 +130,20 @@ ul {
   align-items: center;
   height: 100vh;
   width: 100%;
+  background-color: #a8d1b3;
+}
+
+.bar {
+  width: 50vw;
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  gap: 1rem;
+}
+
+.navbar ul a.active {
+ color: rgb(34 197 94);
+ background-color: #72bf78;
 }

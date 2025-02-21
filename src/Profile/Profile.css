@@ -1,7 +1,6 @@
-
 body {
-  background: linear-gradient(to bottom right, #E2DAD6, #F5EDED);
-  font-family: 'Helvetica Neue', sans-serif;
+  /* background: linear-gradient(to bottom right, #e2dad6, #f5eded); */
+  font-family: "Helvetica Neue", sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -12,26 +11,25 @@ body {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  
+  width: 100vw;
 }
 
 .profile-container {
   background: #ffffff;
-  padding: 2vh 2vw; /* Adjust padding to make it smaller */
+  padding: 2vh 2vw;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 70vw; /* Adjust width to make it smaller */
-  max-width: 40vw; /* Adjust max-width to make it smaller */
+  box-shadow: 0 4px 8px rgba(183, 231, 164, 0.89);
+  width: 70vw;
+  max-width: 90vw;
   text-align: center;
-  min-height: 45vh; /* Adjust min-height to make it smaller */
+  min-height: 45vh;
 }
-
 
 .profile-picture {
   width: 10vw;
   height: 10vw;
   border-radius: 50%;
-  background: linear-gradient(to right, #6482AD, #7FA1C3);
+  background: linear-gradient(to right, #16cf47, #a8d1b3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,27 +62,27 @@ body {
   border-radius: 5px;
   margin-bottom: 2vh;
   font-size: 1rem;
-  background-color: #F5EDED;
+  background-color: #f5eded;
 }
 .toggle-password-button {
   width: 100%;
   padding: 2vh;
-  background: #6482AD;
+  background-color: #72bf78;
   color: #ffffff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 1rem;
-  transition: background 0.3s, transform 0.3s
+  transition: background 0.3s, transform 0.3s;
 }
 
 .toggle-password-button:hover {
-  background-color: #0056b3;
+  background-color: #2ad056;
 }
 .form-group button {
   width: 100%;
   padding: 2vh;
-  background: #6482AD;
+  background: #6482ad;
   color: #ffffff;
   border: none;
   border-radius: 5px;
@@ -94,7 +92,7 @@ body {
 }
 
 .form-group button:hover {
-  background: #7FA1C3;
+  background: #3271b0;
   transform: translateY(-2px);
 }
 
@@ -110,12 +108,16 @@ body {
 }
 
 .sign-out-button {
-  background: #E2DAD6;
+  background: #e2dad6;
   color: #ffffff;
 }
+/* .expanded {
+  height: max-content; 
+  background-color: #f0f0f0;
+} */
 
 .sign-out-button:hover {
-  background: #6482AD;
+  background: #3271b0;
   transform: translateY(-2px);
 }
 
@@ -127,4 +129,16 @@ body {
 .delete-account-button:hover {
   background: #ff5252;
   transform: translateY(-2px);
+}
+
+.spinner2 {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-items: center;
+  width: 100%;
+}
+.profile-spinner {
+  justify-self: center;
+  align-self: center;
 }

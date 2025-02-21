@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react"
 import Profile from "../Profile";
 import { Spinner } from "react-spinner-toolkit";
+import Hand from "../hand";
+import { toast } from "react-toastify";
 import {
     collection,
     getDocs,
@@ -31,13 +33,13 @@ const createUser = async () => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         await addDoc(profileCollection, {
-            Name: name, // sname
+            Name: name, 
             Email: email,
             Password: password, 
         });
         navigate("/Profile", {state:{password: password, name:name}});
     } catch (error) {
-       alert("Error:"+error.message);
+       toast.error("Error:"+error.message, {position:"top-center"});
     }
     finally {
          setIsLoading(false);
@@ -45,47 +47,46 @@ const createUser = async () => {
 };
 
     return isLoading ? (
-              <div className="spinner"> <Spinner
-        size={80}
-        color="#72bf78"
-        loading={true}
-        animationType="spin"
-            shape="circle"
-      /></div>
+          <div className="spinner">
+                    <Hand/>
+            </div>
     ):(
     <div className="signup-page">
           <motion.form className="signup-content" onSubmit={(e) => { e.preventDefault(); createUser(); }}
-          initial={{ opacity: 0, y: -50 }} 
-                animate={{ opacity: 1, y: 0 }}  
-                transition={{duration: 1.5}}> 
+          initial={{scale: 0 }} 
+                    animate={{ scale: 1 }} 
+               > 
               <h1>Sign Up</h1>
-              <div className="signup-name"> {/* sname */}
-                 <input
+              <div className="signup-name">
+                 <motion.input
                 type="text"
                 autoComplete="off"
                 placeholder="Enter your name"
                 onChange={(e) => setName(e.target.value)}
                 value={name}
-                 required
+                            required
+                             whileFocus={{scale:1.05}}
   />
 </div>
         <div className="signup-email">
             {/* <h3>Email</h3> */}
-            <input type="email" autoComplete="off" placeholder="Enter your email id" 
+            <motion.input type="email" autoComplete="off" placeholder="Enter your email id" 
                 onChange={(e) => setEmail(e.target.value)} 
                 value={email} 
-                required 
+                            required 
+                           whileFocus={{scale:1.05}}
             />
         </div>
         <div className="signup-password">
             {/* <h3>Password</h3> */}
-            <input type="password" autoComplete="off" placeholder="Enter your password" 
+            <motion.input type="password" autoComplete="off" placeholder="Enter your password" 
                 onChange={(e) => setPassword(e.target.value)} 
                 value={password} 
-                required 
+                            required 
+                               whileFocus={{scale:1.05}}
             />
         </div>
-        <button type="submit">Sign Up</button>
+        <motion.button type="submit" whileTap={{scale:0.9}} whileHover={{scale:1.1}} >Sign Up</motion.button>
     </motion.form>
 </div>
 
