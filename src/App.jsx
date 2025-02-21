@@ -12,7 +12,22 @@ import { getUser } from "./getUser";
 export const AuthContext = createContext(null);
 import Chat from './Chat';
 import Community from './Community'
+import Dashboard from "./Dashboard.jsx";
+import { generateToken } from './firebase';
+import { onMessage } from 'firebase/messaging'; 
+import { messaging } from './firebase';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function Layout() {
+  
+  useEffect(() => {
+    generateToken();
+    onMessage(messaging, (payload) => {
+      console.log(payload);
+    });
+   }, []);   
+  
   const [user, setUser] = useState(null);
   const [data, setData] = useState(null);
   const location = useLocation();
@@ -36,15 +51,19 @@ function Layout() {
         <Route path="/Profile" element={user ? <Profile /> : <Navigate to="/Signin" />} />
         <Route path="/Community" element={user ? <Community /> : <Navigate to="/Signin" />} />
         <Route path="/chat/:roomName" element={user ? <Chat /> : <Navigate to="/Signin" />} />
+        <Route path="/Dashboard" element={user ? <Dashboard /> : <Navigate to="/Signin" />} />
+
      </Routes>
         {/* </React.Suspense> */}
     </AuthContext.Provider>
+    
   );
 }
 function App() {
   return (
     <BrowserRouter>
       <Layout />
+      <ToastContainer />
     </BrowserRouter>
   );
 }
