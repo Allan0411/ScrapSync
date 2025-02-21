@@ -8,6 +8,8 @@ import { AuthContext } from "./App";
 export default function Community() {
     const [roomName, setRoomName] = useState("");
     const [communities, setCommunities] = useState([]);
+    const [allCommunities, setAllCommunities] = useState([]); // Store all communities
+    const [showDropdown, setShowDropdown] = useState(false); // Toggle dropdown
     const navigate = useNavigate(); 
     const { user, data } = useContext(AuthContext);
     const communityRef = collection(db, "Community");
@@ -29,15 +31,12 @@ export default function Community() {
                 const userData = userSnap.data();
                 let userJoinedCommunities = userData.joinedCommunities || [];
     
-                // Fetch all existing community names from Firestore
                 const querySnapshot = await getDocs(collection(db, "Community"));
-                const existingCommunities = querySnapshot.docs.map(doc => doc.id); // All community names from Firestore
+                const existingCommunities = querySnapshot.docs.map(doc => doc.id);
     
-                // Filter out communities that don't exist in Firestore
                 const validCommunities = userJoinedCommunities.filter(name => existingCommunities.includes(name));
     
                 if (validCommunities.length !== userJoinedCommunities.length) {
-                    // Update user's profile with the corrected list
                     await updateDoc(userRef, { joinedCommunities: validCommunities });
                     console.log("Removed non-existent communities from joined list.");
                 }
@@ -49,14 +48,14 @@ export default function Community() {
     
         fetchCommunities();
     }, [user]);
-    
+
     const handleCreateCommunity = async () => {
         if (!roomName.trim()) {
             alert("Enter a valid community name");
             return;
         }
         try {
-            const communityDocRef = doc(db, "Community", roomName); // Set document ID as roomName
+            const communityDocRef = doc(db, "Community", roomName);
             const communitySnap = await getDoc(communityDocRef);
     
             if (communitySnap.exists()) {
@@ -82,22 +81,30 @@ export default function Community() {
             alert("Error creating community. Try again.");
         }
     };
-    
+
     const handleJoinCommunity = async () => {
         if (!roomName.trim()) {
             alert("Enter a community name");
             return;
         }
-
+    
         if (!user?.uid) {
             alert("User not authenticated");
             return;
         }
-
+    
         try {
+            const communityDocRef = doc(db, "Community", roomName);
+            const communitySnap = await getDoc(communityDocRef);
+    
+            if (!communitySnap.exists()) {
+                alert("Community does not exist!");
+                return;
+            }
+    
             const userRef = doc(db, "Profile", data.id);
             const userSnap = await getDoc(userRef);
-
+    
             if (!userSnap.exists()) {
                 alert("User profile not found, creating one...");
                 await setDoc(userRef, { joinedCommunities: [roomName] });
@@ -108,25 +115,32 @@ export default function Community() {
                     alert("Already joined this room.");
                     return;
                 }
-
+    
                 await updateDoc(userRef, {
                     joinedCommunities: arrayUnion(roomName)
                 });
-
+    
                 setCommunities(prev => [...prev, { name: roomName }]);
             }
-
+    
             alert(`Successfully joined ${roomName}`);
         } catch (error) {
             console.error("Error joining group:", error);
             alert("Error joining the community");
         }  
     };
+    
 
-    const handleCheckCommunities= async ()=>{
-
+    const handleCheckCommunities = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, "Community"));
+            const communityList = querySnapshot.docs.map(doc => doc.id);
+            setAllCommunities(communityList);
+            setShowDropdown(!showDropdown); // Toggle dropdown visibility
+        } catch (error) {
+            console.error("Error fetching community list:", error);
+        }
     };
-
 
     return (
         <div className="community-container">
@@ -139,7 +153,22 @@ export default function Community() {
                 />
                 <button type="button" onClick={handleJoinCommunity}>Join Community</button>
                 <button type="button" onClick={handleCreateCommunity}>Create Community</button>
-                <button type="button" >Check Communities</button>
+                <button type="button" onClick={handleCheckCommunities}>
+                    {showDropdown ? "Hide Communities" : "Check Communities"}
+                </button>
+
+                {showDropdown && (
+                    <select
+                        className="community-dropdown"
+                        onChange={(e) => setRoomName(e.target.value)}
+                        value={roomName}
+                    >
+                        <option value="" disabled>Select a community</option>
+                        {allCommunities.map((comm, index) => (
+                            <option key={index} value={comm}>{comm}</option>
+                        ))}
+                    </select>
+                )}
 
                 <h3>Joined Communities:</h3>
                 {communities.length > 0 ? (
