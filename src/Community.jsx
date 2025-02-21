@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from './firebase';
-import { collection, addDoc, getDocs, query, where, updateDoc, arrayUnion, getDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, updateDoc, arrayUnion, getDoc, doc, setDoc } from 'firebase/firestore';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './Community.css';
 import { AuthContext } from "./App";
 
@@ -12,7 +14,6 @@ export default function Community() {
     const [showDropdown, setShowDropdown] = useState(false); // Toggle dropdown
     const navigate = useNavigate(); 
     const { user, data } = useContext(AuthContext);
-    const communityRef = collection(db, "Community");
 
     useEffect(() => {
         const fetchCommunities = async () => {
@@ -43,6 +44,7 @@ export default function Community() {
                 setCommunities(validCommunities.map(name => ({ name })));
             } catch (error) {
                 console.error("Error fetching communities:", error);
+                toast.error("Failed to fetch communities.");
             }
         };
     
@@ -51,7 +53,7 @@ export default function Community() {
 
     const handleCreateCommunity = async () => {
         if (!roomName.trim()) {
-            alert("Enter a valid community name");
+            toast.warning("Enter a valid community name.");
             return;
         }
         try {
@@ -59,14 +61,15 @@ export default function Community() {
             const communitySnap = await getDoc(communityDocRef);
     
             if (communitySnap.exists()) {
-                alert("Community already exists!");
+                toast.info("Community already exists!");
                 return;
             }
 
             if (!data?.Name) {
-                alert("User data not loaded. Try again.");
+                toast.error("User data not loaded. Try again.");
                 return;
             }
+
             await setDoc(communityDocRef, { name: roomName, creator: data.Name });
     
             const userRef = doc(db, "Profile", data.id);
@@ -75,21 +78,22 @@ export default function Community() {
             });
     
             setCommunities(prev => [...prev, { name: roomName }]);
+            toast.success(`Community "${roomName}" created successfully!`);
             navigate(`/chat/${roomName}`);
         } catch (error) {
             console.error("Error creating community:", error);
-            alert("Error creating community. Try again.");
+            toast.error("Error creating community. Try again.");
         }
     };
 
     const handleJoinCommunity = async () => {
         if (!roomName.trim()) {
-            alert("Enter a community name");
+            toast.warning("Enter a community name.");
             return;
         }
     
         if (!user?.uid) {
-            alert("User not authenticated");
+            toast.error("User not authenticated.");
             return;
         }
     
@@ -98,7 +102,7 @@ export default function Community() {
             const communitySnap = await getDoc(communityDocRef);
     
             if (!communitySnap.exists()) {
-                alert("Community does not exist!");
+                toast.warning("Community does not exist!");
                 return;
             }
     
@@ -106,13 +110,13 @@ export default function Community() {
             const userSnap = await getDoc(userRef);
     
             if (!userSnap.exists()) {
-                alert("User profile not found, creating one...");
+                toast.info("User profile not found, creating one...");
                 await setDoc(userRef, { joinedCommunities: [roomName] });
                 setCommunities([{ name: roomName }]);
             } else {
                 const userData = userSnap.data();
                 if (userData.joinedCommunities?.includes(roomName)) {
-                    alert("Already joined this room.");
+                    toast.info("Already joined this room.");
                     return;
                 }
     
@@ -123,10 +127,10 @@ export default function Community() {
                 setCommunities(prev => [...prev, { name: roomName }]);
             }
     
-            alert(`Successfully joined ${roomName}`);
+            toast.success(`Successfully joined "${roomName}"!`);
         } catch (error) {
             console.error("Error joining group:", error);
-            alert("Error joining the community");
+            toast.error("Error joining the community.");
         }  
     };
     
@@ -136,9 +140,10 @@ export default function Community() {
             const querySnapshot = await getDocs(collection(db, "Community"));
             const communityList = querySnapshot.docs.map(doc => doc.id);
             setAllCommunities(communityList);
-            setShowDropdown(!showDropdown); // Toggle dropdown visibility
+            setShowDropdown(!showDropdown);
         } catch (error) {
             console.error("Error fetching community list:", error);
+            toast.error("Failed to fetch community list.");
         }
     };
 

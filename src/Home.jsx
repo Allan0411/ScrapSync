@@ -1,24 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { db } from './firebase'; // Import Firebase config
-import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, where,query } from 'firebase/firestore';
+import { AuthContext } from './App';
+
+
 
 const HomePage = () => {
   const [habits, setHabits] = useState([]);
   const [newHabit, setNewHabit] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const {user,data}=useContext(AuthContext);
 
   // Fetch habits on component mount
   useEffect(() => {
     const fetchHabits = async () => {
-      const habitsCollection = await getDocs(collection(db, 'habits'));
+      const q=query(collection(db, 'habits'),where("creator","==",data.id));
+      const habitsCollection = await getDocs(q);
       setHabits(habitsCollection.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     };
     fetchHabits();
-  }, []);
+  }, [data?.id]);
 
   const addHabit = async () => {
-    const docRef = await addDoc(collection(db, 'habits'), { name: newHabit, streak: 0, lastCompletedDate: null });
-    setHabits([...habits, { id: docRef.id, name: newHabit, streak: 0, lastCompletedDate: null }]);
+    const docRef = await addDoc(collection(db, 'habits'), { name: newHabit, streak: 0, lastCompletedDate: null,creator:data.id });
+    setHabits([...habits, { id: docRef.id, name: newHabit, streak: 0, lastCompletedDate: null,creator:data.id }]);
     setNewHabit("");
     setIsModalOpen(false); // Close the modal after adding the habit
   };
