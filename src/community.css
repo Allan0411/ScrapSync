@@ -1,82 +1,78 @@
 /* Community.css */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f0fff4; /* Light green background */
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  font-family: "Arial", sans-serif;
+  background-color: #f0fff4; /* Light green background */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-.room, .chat-room {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0px 4px 10px rgba(0, 128, 0, 0.2);
-    text-align: center;
-    max-width: 400px;
-    width: 100%;
+.room,
+.chat-room {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 128, 0, 0.2);
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
 }
 
 h2 {
-    color: #008000; /* Dark green */
+  color: #008000; /* Dark green */
 }
 
 label {
-    font-weight: bold;
-    display: block;
-    margin: 10px 0;
-    color: #006400; /* Deep green */
+  font-weight: bold;
+  display: block;
+  margin: 10px 0;
+  color: #006400; /* Deep green */
 }
 
-
-
 button {
-    background: #008000;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    margin: 10px 5px;
-    cursor: pointer;
-    border-radius: 6px;
-    font-size: 16px;
-    transition: 0.3s;
+  background: #008000;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin: 10px 5px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: 0.3s;
 }
 
 button:hover {
-    background: #006400;
+  background: #006400;
 }
 
-
-
 .existing-comms {
-    background: #e8ffe8;
-    padding: 8px;
-    margin: 5px 0;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.3s;
-    text-align: left;
+  background: #e8ffe8;
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+  text-align: left;
 }
 
 .existing-comms:hover {
-    background: #d0f0d0;
+  background: #d0f0d0;
 }
 
 .existing-comms li {
-    padding: 8px;
-    border-bottom: 1px solid #008000; /* Green line */
-    list-style-type: none; /* Removes bullet points */
+  padding: 8px;
+  border-bottom: 1px solid #008000; /* Green line */
+  list-style-type: none; /* Removes bullet points */
 }
 
 .existing-comms li:last-child {
-    border-bottom: none; /* Removes border from the last item */
+  border-bottom: none; /* Removes border from the last item */
 }
 
-.community-container{
-    display:flex;
-    justify-content: center;
-    
+.community-container {
+  display: flex;
+  justify-content: center;
 }

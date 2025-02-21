@@ -1,50 +1,73 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import '../src/Profile/Profile.css'; 
 import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from './App';
-
-
+import { doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { db } from './firebase'; // Import the Firestore instance
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { getAuth, updatePassword } from "firebase/auth";
 
 const ProfileScreen = () => {
-  const { user, data } = useContext(AuthContext);
-  console.log(data);
+  const { user, setUser, data, setData } = useContext(AuthContext);
+  
   const location = useLocation();
   const navigate = useNavigate();
-  const initialName = user?.Name || "";
-  const initialPassword = user?.Password || ""; // Get initial name from state
-  const [name, setName] = useState(initialName);
+  const initialPassword = ""; 
+  const [name, setName] = useState(data.Name);
   const [newPassword, setNewPassword] = useState(initialPassword);
-  const [confirmPassword, setConfirmPassword] = useState(initialPassword);  // Set initial password
+  const [confirmPassword, setConfirmPassword] = useState(initialPassword);  
   const [errorMessage, setErrorMessage] = useState('');
- const [passwordMatch, setPasswordMatch] = useState(true);
-  const [isNameSaved, setIsNameSaved] = useState(!!initialName);  // Track if name is saved
+  const [passwordMatch, setPasswordMatch] = useState(true);
+  // const [isNameSaved, setIsNameSaved] = useState(!!initialName);  
+  const [isChangingPassword, setIsChangingPassword] = useState(false); 
 
-  useEffect(() => {
-    setConfirmPassword(newPassword);  // Synchronize confirm password with new password
-  }, [newPassword]);
+const update = async (field, value) => {
+  try {
+    const currentUser = doc(db, "Profile", data.id);
+    await updateDoc(currentUser, { [field]: value });
+    data.Name = value;
+    setData(data);
+    console.log(data);
+    setName(value);
+  } catch (error) {
+    console.error("Error updating document:", error);
+  }
+};
 
   const handleSaveName = () => {
     if (name.trim() === '') {
       setErrorMessage('Name cannot be empty');
     } else {
       setErrorMessage('');
-      setIsNameSaved(true);  // Set name as saved
-      console.log('Name saved:', name);
+      update("Name", name);
     }
   };
-
-  const handleSavePassword = () => {
-    if (!isNameSaved) {
-      setErrorMessage('Please enter and save your name first');
+   
+const handleSavePassword = async () => {
+  if (newPassword === "" || confirmPassword === "") {
+    setErrorMessage("Password fields cannot be empty");
+    return;
+  }
+  if (newPassword !== confirmPassword) {
+    setErrorMessage("Passwords do not match");
+    return;
+  }
+  try {
+    const auth = getAuth();
+    const user1 = auth.currentUser; 
+    if (!user1) {
+      setErrorMessage("No authenticated user found");
       return;
     }
-    if (newPassword === confirmPassword) {
-      setErrorMessage('');
-      console.log('Password changed');
-    } else {
-      setErrorMessage('Passwords do not match');
+    await updatePassword(user1, newPassword);
+    alert("Password changed successfully!");
+    setNewPassword("");
+    setConfirmPassword("");
+  } catch (error) { {
+      alert("Error updating password: " + error.message);
     }
-  };
+  }
+};
 
   const handleNewPasswordChange = (e) => {
     setNewPassword(e.target.value);
@@ -57,20 +80,26 @@ const ProfileScreen = () => {
   };
 
   const handleSignOut = () => {
-    if (!isNameSaved) {
-      setErrorMessage('Please enter and save your name first');
-      return;
-    }
-    navigate('/signin'); // Redirect to the sign-in page
+    setUser(null);
+    navigate('/Signin');
   };
 
-  const handleDeleteAccount = () => {
-    if (!isNameSaved) {
-      setErrorMessage('Please enter and save your name first');
-      return;
-    }
-    // Perform delete account logic here
-    console.log('Account deleted');
+
+
+const handleDeleteAccount = async () => { 
+  try {
+    await deleteDoc(doc(db, "Profile", data.id));
+    console.log("Account deleted successfully!");
+    setUser(null);
+    navigate('/Signin');
+  } catch (error) {
+    console.error("Error deleting account:", error);
+  }
+};
+
+  const handleToggleChangePassword = () => {
+    setIsChangingPassword(!isChangingPassword);
+    setErrorMessage(''); 
   };
 
   const getInitials = (name) => {
@@ -95,30 +124,33 @@ const ProfileScreen = () => {
             />
             <button onClick={handleSaveName}>Save</button>
           </div>
-          <div className="form-group">
-            <label>Change Password</label>
-            <input
-              type="password"
-              placeholder="New Password"
-              value={newPassword}
-              onChange={handleNewPasswordChange}
-            />
-            {!passwordMatch && <div className="error-message">Passwords do not match</div>}
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={handleConfirmPasswordChange}
-            />
-            <button onClick={handleSavePassword} disabled={!isNameSaved}>Save</button>
-          </div>
-          <button className="sign-out-button" onClick={handleSignOut} disabled={!isNameSaved}>Sign Out</button>
-          <button className="delete-account-button" onClick={handleDeleteAccount} disabled={!isNameSaved}>Delete Account</button>
+          {isChangingPassword && (
+            <div className="form-group">
+              <label>Change Password</label>
+              <input
+                type="password"
+                placeholder="New Password"
+                value={newPassword}
+                onChange={handleNewPasswordChange}
+              />
+              {!passwordMatch && <div className="error-message">Passwords do not match</div>}
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={handleConfirmPasswordChange}
+              />
+              <button onClick={handleSavePassword} >Save</button>
+            </div>
+          )}
+          <button className="toggle-password-button" onClick={handleToggleChangePassword}>
+            {isChangingPassword ? "Cancel" : "Change Password"}
+          </button>
+          <button className="sign-out-button" onClick={handleSignOut}>Sign Out</button>
+          <button className="delete-account-button" onClick={handleDeleteAccount}>Delete Account</button>
         </div>
       </div>
     </div>
-
-
   );
 };
 

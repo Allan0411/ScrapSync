@@ -25,7 +25,7 @@ function Layout() {
 
 
   return (
-    <AuthContext.Provider value={{ user, setUser, data }}>
+    <AuthContext.Provider value={{ user, setUser, data, setData }}>
       {!hideNavbar && <Navbar />}
       {/* <React.Suspense fallback={<p className="p">Loading...</p>}> */}
       <Routes>
