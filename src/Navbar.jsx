@@ -5,7 +5,7 @@ export default function Navbar() {
       <nav className='navigation'>
           <ul>
               <li>
-                  <NavLink to="/Home" className={"nv"}>Home</NavLink>
+                  <NavLink to="/Home" activeStyle={{ color:'#5754a8' }}className={"nv"}>Home</NavLink>
               </li>
               <li>
                 <NavLink to="/Community" className={"nv"}>Community</NavLink>

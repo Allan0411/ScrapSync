@@ -32,6 +32,7 @@ function Layout() {
   const [data, setData] = useState(null);
   const location = useLocation();
   const hideNavbar = location.pathname === "/Signin" || location.pathname === "/Signup";
+
   useEffect(() => {
     if (user?.email) {
       getUser(user.email).then(setData);
