@@ -164,7 +164,9 @@ export default function Community() {
                 <button type="button" onClick={handleCheckCommunities}>
                     {showDropdown ? "Hide Communities" : "Check Communities"}
                 </button>
-
+                <button type="button" onClick={() => navigate("/friends")}>
+                Friend List
+            </button>
                 {showDropdown && (
                     <select
                         className="community-dropdown"
