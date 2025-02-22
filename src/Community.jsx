@@ -70,7 +70,10 @@ export default function Community() {
                 return;
             }
 
-            await setDoc(communityDocRef, { name: roomName, creator: data.Name });
+            const habit=prompt("Enter habit");
+            if(!habit)return;
+
+            await setDoc(communityDocRef, { name: roomName, creator: data.Name, habit:habit },{merge:true});
     
             const userRef = doc(db, "Profile", data.id);
             await updateDoc(userRef, {
