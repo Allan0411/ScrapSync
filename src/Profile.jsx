@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from './App';
 import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from './firebase'; 
-import { getAuth, updatePassword, signOut, deleteUser } from "firebase/auth";
+import { getAuth, updatePassword, signOut, deleteUser, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { motion } from "framer-motion";
@@ -94,33 +94,54 @@ useEffect(() => {
     }
   };
 
-  const handleDeleteAccount = () => {
-    confirmAlert({
-      title: "Confirm Deletion",
-      message: "Are you sure you want to delete your account?",
-      buttons: [
-        {
-          label: "Yes",
-          onClick: async () => {
-            try {
-              if (!user) return;
-              await deleteDoc(doc(db, "Profile", data.id));
-              await deleteUser(user);
-              toast.success("Account deleted successfully!", { position: "top-center" });
-              setUser(null);
-              navigate("/Signin");
-            } catch (error) {
-              toast.error("Error deleting account: " + error, { position: "top-center" });
+
+const handleDeleteAccount = () => {
+  confirmAlert({
+    title: "Confirm Deletion",
+    message: "Are you sure you want to delete your account?",
+    buttons: [
+      {
+        label: "Yes",
+        onClick: async () => {
+          try {
+            if (!user) return;
+            
+            const user1 = auth.currentUser;
+            if (!user1) {
+              toast.error("No authenticated user found.", { position: "top-center" });
+              return;
             }
+
+            const password = prompt("Please enter your password to confirm deletion:");
+            if (!password) {
+              toast.error("Password is required to delete account.", { position: "top-center" });
+              return;
+            }
+
+            // Reauthenticate the user
+            const credential = EmailAuthProvider.credential(user1.email, password);
+            await reauthenticateWithCredential(user1, credential);
+
+            // Proceed with deletion
+            await deleteDoc(doc(db, "Profile", data.id));
+            await deleteUser(user1);
+            
+            toast.success("Account deleted successfully!", { position: "top-center" });
+            setUser(null);
+            navigate("/Signin");
+          } catch (error) {
+            toast.error("Error deleting account: " + error.message, { position: "top-center" });
           }
-        },
-        {
-          label: "No",
-          onClick: () => console.log("Deletion canceled")
         }
-      ]
-    });
-  };
+      },
+      {
+        label: "No",
+        onClick: () => console.log("Deletion canceled")
+      }
+    ]
+  });
+};
+
 
   const handleToggleChangePassword = () => {
     setIsChangingPassword(!isChangingPassword);

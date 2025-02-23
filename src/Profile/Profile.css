@@ -138,6 +138,7 @@ body {
 .delete-account-button:hover {
   background: #ff5252;
   transform: translateY(-2px);
+  color:white;
 }
 
 .spinner2 {
@@ -167,3 +168,4 @@ body {
   opacity: 0;
   transition: opacity 300ms;
 }
+
