@@ -36,6 +36,7 @@ const createUser = async () => {
             Name: name, 
             Email: email,
             Password: password, 
+            Points: 0,
         });
         navigate("/Profile", {state:{password: password, name:name}});
     } catch (error) {

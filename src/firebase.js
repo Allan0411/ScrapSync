@@ -1,10 +1,11 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { Firestore, getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import { Firestore, getFirestore} from "firebase/firestore";
+import { getStorage, } from "firebase/storage";
 import { getAnalytics } from "firebase/analytics";
 import "firebase/storage"
 import { getMessaging, getToken } from "firebase/messaging";
+import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, where,query, deleteField, Timestamp, arrayUnion  } from 'firebase/firestore';
 // import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -36,6 +37,7 @@ export const generateToken = async () => {
     const token = await getToken(messaging, {
       vapidKey: "BCqQHXeZZH58EYvSVxgdzyVYLC78Q9tuv5SdjSRYfvAqg-BAGPQpKAoCogdFUQh1s1iqZAixqgnjF9GpFI_BfEk",
     });
-    console.log(token);
+    //    await setDoc(doc(db, "Profile", currentUser.uid), { fcmToken: token }, { merge: true });
+    // }
   }
 };

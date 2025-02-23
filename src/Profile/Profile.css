@@ -15,21 +15,27 @@ body {
 }
 
 .profile-container {
-  background: #ffffff;
+  background: #fdfdfd;
   padding: 2vh 2vw;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(183, 231, 164, 0.89);
-  width: 70vw;
+  width: 60vw;
   max-width: 90vw;
   text-align: center;
   min-height: 45vh;
 }
 
+.loadingp{
+  width: 100vw;
+  height: 100vh;
+  align-content: center;
+  justify-items: center;
+}
 .profile-picture {
   width: 10vw;
   height: 10vw;
   border-radius: 50%;
-  background: linear-gradient(to right, #16cf47, #a8d1b3);
+  background: linear-gradient(to right, #4c5fd5, #e88e8e);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,7 +73,7 @@ body {
 .toggle-password-button {
   width: 100%;
   padding: 2vh;
-  background-color: #72bf78;
+  background-color: #2ad056;
   color: #ffffff;
   border: none;
   border-radius: 5px;
@@ -78,11 +84,12 @@ body {
 
 .toggle-password-button:hover {
   background-color: #2ad056;
+  color:white;
 }
 .form-group button {
   width: 100%;
   padding: 2vh;
-  background: #6482ad;
+  background: #4c5fd5;
   color: #ffffff;
   border: none;
   border-radius: 5px;
@@ -92,8 +99,9 @@ body {
 }
 
 .form-group button:hover {
-  background: #3271b0;
+  background: #4c5fd5;
   transform: translateY(-2px);
+  color:white;
 }
 
 .sign-out-button,
@@ -117,8 +125,9 @@ body {
 } */
 
 .sign-out-button:hover {
-  background: #3271b0;
+  background: #4c5fd5;
   transform: translateY(-2px);
+  color:white;
 }
 
 .delete-account-button {
@@ -141,4 +150,20 @@ body {
 .profile-spinner {
   justify-self: center;
   align-self: center;
+}
+.fade-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+.fade-exit {
+  opacity: 1;
+}
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms;
 }

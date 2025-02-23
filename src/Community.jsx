@@ -15,41 +15,41 @@ export default function Community() {
     const navigate = useNavigate(); 
     const { user, data } = useContext(AuthContext);
 
-    useEffect(() => {
-        const fetchCommunities = async () => {
-            if (!user?.uid) return;
-    
-            try {
-                const userRef = doc(db, "Profile", data.id);
-                const userSnap = await getDoc(userRef);
-    
-                if (!userSnap.exists()) {
-                    console.log("User profile not found, creating new profile...");
-                    await setDoc(userRef, { joinedCommunities: [] });
-                    return;
-                }
-    
-                const userData = userSnap.data();
-                let userJoinedCommunities = userData.joinedCommunities || [];
-    
-                const querySnapshot = await getDocs(collection(db, "Community"));
-                const existingCommunities = querySnapshot.docs.map(doc => doc.id);
-    
-                const validCommunities = userJoinedCommunities.filter(name => existingCommunities.includes(name));
-    
-                if (validCommunities.length !== userJoinedCommunities.length) {
-                    await updateDoc(userRef, { joinedCommunities: validCommunities });
-                    console.log("Removed non-existent communities from joined list.");
-                }
-                setCommunities(validCommunities.map(name => ({ name })));
-            } catch (error) {
-                console.error("Error fetching communities:", error);
-                toast.error("Failed to fetch communities.");
+useEffect(() => {
+    const fetchCommunities = async () => {
+        if (!user?.uid || !data?.id) return; // Ensure data exists before using it
+
+        try {
+            const userRef = doc(db, "Profile", data.id);
+            const userSnap = await getDoc(userRef);
+
+            if (!userSnap.exists()) {
+                console.log("User profile not found, creating new profile...");
+                await setDoc(userRef, { joinedCommunities: [] });
+                return;
             }
-        };
-    
-        fetchCommunities();
-    }, [user]);
+
+            const userData = userSnap.data();
+            let userJoinedCommunities = userData.joinedCommunities || [];
+
+            const querySnapshot = await getDocs(collection(db, "Community"));
+            const existingCommunities = querySnapshot.docs.map(doc => doc.id);
+
+            const validCommunities = userJoinedCommunities.filter(name => existingCommunities.includes(name));
+
+            if (validCommunities.length !== userJoinedCommunities.length) {
+                await updateDoc(userRef, { joinedCommunities: validCommunities });
+                console.log("Removed non-existent communities from joined list.");
+            }
+            setCommunities(validCommunities.map(name => ({ name })));
+        } catch (error) {
+            console.error("Error fetching communities:", error);
+            toast.error("Failed to fetch communities.");
+        }
+    };
+
+    fetchCommunities();
+}, [user, data]); 
 
     const handleCreateCommunity = async () => {
         if (!roomName.trim()) {

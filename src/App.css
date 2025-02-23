@@ -17,6 +17,7 @@ body {
   justify-content: center;
   align-items: center;
   overflow-x: hidden;
+  background-color: #fff;
 }
 
 .signup-page,
@@ -29,12 +30,13 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #a8d1b3;
+  background-color: #f0f1f7;
   width: 100%;
 }
 
 .signup-content,
 .signin-content {
+  box-shadow: black;
   background-color: white;
   max-width: 400px;
   width: 90%;
@@ -84,10 +86,12 @@ ul {
   list-style-type: none;
 }
 .navigation {
+  justify-self: center;
   background-color: white;
   color: black;
   /* position: relative; */
-  width: 100vw;
+  width: 90vw;
+  border-bottom: 1px solid black;
 }
 
 .navigation ul {
@@ -100,7 +104,7 @@ ul {
 
 .signup-page button,
 .signin-page button {
-  background-color: #72bf78;
+  background-color: black;
   color: white;
   outline: none;
   border: none;
@@ -108,13 +112,18 @@ ul {
 }
 .signup-page button:active,
 .signin-page button:active {
-  color: #72bf78;
+  color: black;
   background-color: white;
-  border: 1px solid #72bf78;
+  border: 1px solid black;
 }
-
+.signup-page button:hover,
+.signin-page button:hover{
+    color: black;
+  background-color: white;
+  border: 1px solid black;
+}
 .nv {
-  color: green;
+  color: black;
   text-decoration: none;
 }
 
@@ -130,20 +139,92 @@ ul {
   align-items: center;
   height: 100vh;
   width: 100%;
-  background-color: #a8d1b3;
+  background-color: #fff;
+}
+
+
+.navbar ul a.active {
+ color: black;
+ background-color: black;
+}
+
+/* Fade transition */
+.fade-enter {
+  opacity: 0;
+
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in-out;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms ease-in-out;
+}
+
+.skeleton{
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+.skeleton-div{
+  color: aqua;
+  width: 90vw;
+  height: 10vh;
+}
+
+.active {
+  font-weight: bold;
+  border-bottom: 2px solid black;
+}
+.bi-fire{
+color: red;
+font-size: 2rem;
+}
+
+.dashboard{
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.dashboard-points{
+  display: flex;
+  width: 90%;
+  justify-content: flex-end;
+
+}
+
+.points {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; 
+
 }
 
 .bar {
-  width: 50vw;
-  height: 50vh;
+  
+  width: 100vw;
+  height: auto;
+  min-height: 300px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: start;
+  align-items: center;
   gap: 1rem;
+ justify-content: center;
 }
 
-.navbar ul a.active {
- color: rgb(34 197 94);
- background-color: #72bf78;
+.home{
+  background-color: white;
 }

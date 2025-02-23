@@ -1,9 +1,10 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "./firebase";
-import { collection, query, orderBy, onSnapshot, getDoc, doc, where } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, getDoc, doc, where, addDoc,Timestamp, serverTimestamp } from "firebase/firestore";
 import "./Chat.css";
 import { AuthContext } from "./App";
+import { motion } from "motion/react";
 
 export default function Chat() {
     const { roomName } = useParams();  

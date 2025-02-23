@@ -1,7 +1,7 @@
 /* Community.css */
 body {
-  font-family: "Arial", sans-serif;
-  background-color: #f0fff4; /* Light green background */
+  font-family:"Merienda";
+  background-color: #fff; 
   margin: 0;
   padding: 0;
   display: flex;
@@ -21,19 +21,23 @@ body {
   width: 100%;
 }
 
+.room{
+  max-width: 700px;
+}
+
 h2 {
-  color: #07b007; /* Dark green */
+  color: black; /* Dark green */
 }
 
 label {
   font-weight: bold;
   display: block;
   margin: 10px 0;
-  color: #006400; /* Deep green */
+  color: black; /* Deep green */
 }
 
 button {
-  background: #4dbd56;
+  background: #4c5fd5;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -45,7 +49,8 @@ button {
 }
 
 button:hover {
-  background: #006400;
+  background: #e6e8f4;
+  color: #4c5fd5;
 }
 
 .existing-comms {
@@ -73,6 +78,7 @@ button:hover {
 }
 
 .community-container {
+  margin-top: 1rem;
   display: flex;
   justify-content: center;
 }

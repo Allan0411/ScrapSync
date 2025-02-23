@@ -7,7 +7,7 @@ const Hand = () => {
     autoplay: true,
     loop: true, 
   };
-  const { View } = useLottie(options, { height: 800 });
+  const { View } = useLottie(options, { height: 400 });
 
   return <>{View}</>;
 };
