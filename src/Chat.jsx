@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "./firebase";
-import { collection, query, orderBy, onSnapshot, getDoc, doc, where } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, getDoc, doc, where, updateDoc, arrayRemove, addDoc, serverTimestamp } from "firebase/firestore";
 import "./Chat.css";
 import { AuthContext } from "./App";
 
@@ -11,6 +11,7 @@ export default function Chat() {
     const [message, setMessage] = useState("");
     const [leaderboard, setLeaderboard] = useState([]);
     const [currentView, setCurrentView] = useState("chat"); // "chat" or "leaderboard"
+    const [menuOpen, setMenuOpen] = useState(false); // State for menu toggle
     const navigate = useNavigate();
 
     const chatRef = collection(db, "Community", roomName, "Chat");
@@ -129,6 +130,16 @@ export default function Chat() {
                     >
                         Leaderboard
                     </button>
+                </div>
+
+                {/* Three-dot menu */}
+                <div className="menu-container">
+                    <button className="menu-btn" onClick={() => setMenuOpen(!menuOpen)}>⋮</button>
+                    {menuOpen && (
+                        <div className="menu-dropdown">
+                            <button className="leave-btn" onClick={handleLeaveCommunity}>Leave Community</button>
+                        </div>
+                    )}
                 </div>
             </div>
 
