@@ -1,82 +1,91 @@
-
 .chat-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh; /* Full height */
-    width: 100%;
-    overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full height */
+  width: 100%;
+  overflow: hidden;
 }
 
+button{
+  outline: none;
+    border: none;
+}
 .chat-box {
-    flex: 1;
-    overflow-y: auto; /* Enable scrolling */
-    padding: 10px;
-    background-color: #f9f9f9; /* Light background */
-    padding-bottom:80px ;
+  flex: 1;
+  overflow-y: auto; /* Enable scrolling */
+  padding: 10px;
+  background-color: #f9f9f9; /* Light background */
+  padding-bottom: 80px;
 }
 
 .input-container {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    background-color: #E5DDD9;
-    border-top: 1px solid #ddd; /* Separator */
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #e5ddd9;
+  border-top: 1px solid #ddd; /* Separator */
+  position: fixed;
+  bottom: 0;
+  width: 100%;
 }
 
 .input-container input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
 }
 
 .input-container button {
-    margin-left: 10px;
-    padding: 10px 15px;
-    background-color:#4c5fd5;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
+  margin-left: 10px;
+  padding: 10px 15px;
+  background-color: #4c5fd5;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  outline: none;
+  border: none;
 }
 
-
 .chat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 2px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 2px solid #ddd;
 }
 
 .chat-title {
-    font-size: 1.5rem;
-    font-weight: bold;
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 .leave-btn {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 1rem;
-    transition: background 0.3s;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background 0.3s;
 }
 
 .leave-btn:hover {
-    background-color: #cc0000;
+  background-color: #cc0000;
+  color: white;
 }
 
-.menu-btn{
-    background-color:#F0FFF4 ;
-    color:black;
+.menu-btn {
+  background-color: #f0fff4;
+  color: black;
+  outline: none;
+  border: none;
 }
-.menu-btn:hover{
-    background-color: #e5f6ea;
+.menu-btn:hover {
+  background-color: #e5f6ea;
+  outline: none;
+  border: none;
 }

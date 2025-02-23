@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "./firebase";
-import { collection, query, orderBy, onSnapshot, getDoc, doc, where, addDoc,Timestamp, serverTimestamp } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, getDoc, doc, where, updateDoc, arrayRemove, addDoc, serverTimestamp } from "firebase/firestore";
 import "./Chat.css";
 import { AuthContext } from "./App";
 import { motion } from "motion/react";
@@ -12,6 +12,7 @@ export default function Chat() {
     const [message, setMessage] = useState("");
     const [leaderboard, setLeaderboard] = useState([]);
     const [currentView, setCurrentView] = useState("chat"); // "chat" or "leaderboard"
+    const [menuOpen, setMenuOpen] = useState(false); // State for menu toggle
     const navigate = useNavigate();
 
     const chatRef = collection(db, "Community", roomName, "Chat");
@@ -118,18 +119,30 @@ export default function Chat() {
 
                 {/* Navigation Buttons */}
                 <div className="view-buttons">
-                    <button 
+                    <motion.button 
+                         whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}
                         className={`view-btn ${currentView === "chat" ? "active" : ""}`}
                         onClick={() => setCurrentView("chat")}
                     >
                         Chat
-                    </button>
-                    <button 
+                    </motion.button>
+                    <motion.button 
+                         whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}
                         className={`view-btn ${currentView === "leaderboard" ? "active" : ""}`}
                         onClick={() => setCurrentView("leaderboard")}
                     >
                         Leaderboard
-                    </button>
+                    </motion.button>
+                </div>
+
+                {/* Three-dot menu */}
+                <div className="menu-container">
+                    <motion.button  whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} className="menu-btn" onClick={() => setMenuOpen(!menuOpen)}>⋮</motion.button>
+                    {menuOpen && (
+                        <div className="menu-dropdown">
+                            <motion.button  whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} className="leave-btn" onClick={handleLeaveCommunity}>Leave Community</motion.button>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -151,7 +164,7 @@ export default function Chat() {
                             onKeyDown={handleKeyDown}
                             placeholder="Type a message..."
                         />
-                        <button onClick={handleSendMessage}>Send</button>
+                        <motion.button  whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} onClick={handleSendMessage}>Send</motion.button>
                     </div>
                 </>
             ) : (

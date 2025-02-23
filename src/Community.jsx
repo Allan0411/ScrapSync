@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Community.css';
 import { AuthContext } from "./App";
+import { motion } from "motion/react";
 
 export default function Community() {
     const [roomName, setRoomName] = useState("");
