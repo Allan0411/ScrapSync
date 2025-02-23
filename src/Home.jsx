@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { db } from './firebase'; // Import Firebase config
+import { db } from './firebase';
 import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, where,query, deleteField, Timestamp, arrayUnion  } from 'firebase/firestore';
 import { AuthContext } from './App';
 import { AnimatePresence, motion } from 'motion/react';
@@ -14,13 +14,13 @@ const HomePage = () => {
   const { user, setUser, data, setData } = useContext(AuthContext);
   const [isloading, setisloading] = useState(false);
       const profileCollection = collection(db, "Profile");
-  // Fetch habits on component mount
+ 
     console.log(data);
 useEffect(() => {
   const fetchHabits = async () => {
     try {
       setisloading(true);
-      if (!data?.id) return; // Ensure `data.id` exists before running the query
+      if (!data?.id) return; 
 
       const q = query(collection(db, 'habits'), where("creator", "==", data.id));
       const habitsCollection = await getDocs(q);
@@ -148,7 +148,7 @@ style={{
         +
       </motion.button>
 
-      {/* Modal for adding a habit */}
+    
         {isModalOpen && (
           <AnimatePresence>
           <motion.div

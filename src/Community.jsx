@@ -10,8 +10,8 @@ import { AuthContext } from "./App";
 export default function Community() {
     const [roomName, setRoomName] = useState("");
     const [communities, setCommunities] = useState([]);
-    const [allCommunities, setAllCommunities] = useState([]); // Store all communities
-    const [showDropdown, setShowDropdown] = useState(false); // Toggle dropdown
+    const [allCommunities, setAllCommunities] = useState([]); 
+    const [showDropdown, setShowDropdown] = useState(false); 
     const navigate = useNavigate(); 
     const { user, data } = useContext(AuthContext);
 

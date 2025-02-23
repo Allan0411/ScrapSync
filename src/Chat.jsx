@@ -12,8 +12,8 @@ export default function Chat() {
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
     const [leaderboard, setLeaderboard] = useState([]);
-    const [currentView, setCurrentView] = useState("chat"); // "chat" or "leaderboard"
-    const [menuOpen, setMenuOpen] = useState(false); // State for menu toggle
+    const [currentView, setCurrentView] = useState("chat"); 
+    const [menuOpen, setMenuOpen] = useState(false); 
     const navigate = useNavigate();
 
     const chatRef = collection(db, "Community", roomName, "Chat");
@@ -63,7 +63,7 @@ export default function Chat() {
 
     const fetchLeaderboard = async () => {
         try {
-            // Fetch community details to get the habit field
+           
             const communityDoc = await getDoc(doc(db, "Community", roomName));
             if (!communityDoc.exists()) {
                 console.error("Community not found");
@@ -71,13 +71,13 @@ export default function Chat() {
             }
             const communityHabit = communityDoc.data().habit;
 
-            // Fetch all profiles who joined the community
+           
             const profilesRef = collection(db, "Profile");
             const q = query(profilesRef, where("joinedCommunities", "array-contains", roomName));
             const snapshot = await onSnapshot(q, (snapshot) => {
                 const profiles = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-                // Fetch habits for each user and match with the community's habit
+                
                 const leaderboardData = [];
                 profiles.forEach(async (profile) => {
                     const habitsRef = collection(db, "habits");
@@ -118,7 +118,7 @@ export default function Chat() {
             <div className="chat-header">
                 <h2 className="chat_title">Welcome to {roomName}</h2>
 
-                {/* Navigation Buttons */}
+                
                 <div className="view-buttons">
                     <motion.button 
                          whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}
@@ -136,7 +136,7 @@ export default function Chat() {
                     </motion.button>
                 </div>
 
-                {/* Three-dot menu */}
+      
                 <div className="menu-container">
                     <motion.button  whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} className="menu-btn" onClick={() => setMenuOpen(!menuOpen)}>⋮</motion.button>
                     {menuOpen && (
@@ -149,14 +149,14 @@ export default function Chat() {
 
             {currentView === "chat" ? (
                 <>
-                    {/* Chat Messages */}
+                 
                     <div className="chat-box">
                         {messages.map((msg, i) => (
                             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1, transition: i*0.8 }} key={msg.id}><strong>{msg.sender}: </strong>{msg.text}</motion.p>
                         ))}
                     </div>
 
-                    {/* Input for sending messages */}
+                    
                     <div className="input-container">
                         <input 
                             type="text" 

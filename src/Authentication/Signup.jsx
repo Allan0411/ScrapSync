@@ -70,7 +70,7 @@ const createUser = async () => {
   />
 </div>
         <div className="signup-email">
-            {/* <h3>Email</h3> */}
+           
             <motion.input type="email" autoComplete="off" placeholder="Enter your email id" 
                 onChange={(e) => setEmail(e.target.value)} 
                 value={email} 
@@ -79,7 +79,7 @@ const createUser = async () => {
             />
         </div>
         <div className="signup-password">
-            {/* <h3>Password</h3> */}
+           
             <motion.input type="password" autoComplete="off" placeholder="Enter your password" 
                 onChange={(e) => setPassword(e.target.value)} 
                 value={password} 

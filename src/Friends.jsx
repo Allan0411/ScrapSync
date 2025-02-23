@@ -33,29 +33,43 @@ export default function Friends() {
 }, [user, data]);  
 
 
-    const handleAcceptFriendRequest = async (requesterEmail) => {
-        try {
-            const userRef = doc(db, "Friends", user.email);
-            const requesterRef = doc(db, "Friends", requesterEmail);
-    
-            await updateDoc(userRef, {
-                friends: arrayUnion(requesterEmail),
-                requests: friendRequests.filter(email => email !== requesterEmail)
-            });
-    
-            await updateDoc(requesterRef, {
-                friends: arrayUnion(user.email)
-            });
-    
-            setFriendRequests(prev => prev.filter(email => email !== requesterEmail));
-            setFriends(prev => [...prev, requesterEmail]);
-    
-            toast.success(`You are now friends with ${requesterEmail}!`);
-        } catch (error) {
-            console.error("Error accepting friend request:", error);
-            toast.error("Failed to accept friend request.");
+const handleAcceptFriendRequest = async (requesterEmail) => {
+    try {
+        const userRef = doc(db, "Friends", user.email);
+        const requesterRef = doc(db, "Friends", requesterEmail);
+
+        
+        const userSnap = await getDoc(userRef);
+        if (!userSnap.exists()) {
+            await setDoc(userRef, { friends: [], requests: [] });
         }
-    };
+
+        
+        const requesterSnap = await getDoc(requesterRef);
+        if (!requesterSnap.exists()) {
+            await setDoc(requesterRef, { friends: [], requests: [] });
+        }
+
+        
+        await updateDoc(userRef, {
+            friends: arrayUnion(requesterEmail),
+            requests: friendRequests.filter(email => email !== requesterEmail)
+        });
+
+        await updateDoc(requesterRef, {
+            friends: arrayUnion(user.email)
+        });
+
+        setFriendRequests(prev => prev.filter(email => email !== requesterEmail));
+        setFriends(prev => [...prev, requesterEmail]);
+
+        toast.success(`You are now friends with ${requesterEmail}!`);
+    } catch (error) {
+        console.error("Error accepting friend request:", error);
+        toast.error("Failed to accept friend request.");
+    }
+};
+
     
 
     const handleRejectFriendRequest = async (requesterEmail) => {

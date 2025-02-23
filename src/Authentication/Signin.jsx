@@ -10,7 +10,7 @@ import Hand from "../hand";
 const auth = getAuth(app);
 
 export default function Signin({ setUser }) {
-    const { user, loading } = useContext(AuthContext); // Get loading state
+    const { user, loading } = useContext(AuthContext); 
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -20,7 +20,7 @@ export default function Signin({ setUser }) {
         if (!loading && user) {
             navigate('/Home', { replace: true });
         }
-    }, [user, navigate, loading]); // Wait for loading to be false
+    }, [user, navigate, loading]); 
 
     const signinUser = async () => {
         setIsLoading(true);
@@ -38,7 +38,7 @@ export default function Signin({ setUser }) {
     };
 
     if (loading) {
-        return <div className="spinner"><Hand /></div>; // Prevent showing signin page while loading
+        return <div className="spinner"><Hand /></div>; 
     }
 
     return (
