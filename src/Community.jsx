@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from './firebase';
-import { collection, addDoc, getDocs, updateDoc, arrayUnion, getDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, updateDoc, arrayUnion, getDoc, doc, setDoc,query,where } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Community.css';
@@ -80,6 +80,27 @@ export default function Community() {
                 joinedCommunities: arrayUnion(roomName)
             });
     
+            const habitsCollection = collection(db, "habits");
+            const habitQuery = query(habitsCollection, 
+                where("creator", "==", data.id), 
+                where("name", "==", habit)
+            );
+            const habitSnapshot = await getDocs(habitQuery);
+    
+            if (habitSnapshot.empty) {
+                
+                const habitRef = doc(habitsCollection);
+                await setDoc(habitRef, {
+                    creator: data.id,
+                    name: habit,
+                    lastCompletedDate: null,
+                    streak: 0
+                });
+                toast.success(`Habit "${habit}" added successfully!`);
+            } else {
+                toast.info("Habit already exists hence not added..");
+            }
+    
             setCommunities(prev => [...prev, { name: roomName }]);
             toast.success(`Community "${roomName}" created successfully!`);
             navigate(`/chat/${roomName}`);
@@ -122,14 +143,37 @@ export default function Community() {
                     toast.info("Already joined this room.");
                     return;
                 }
-    
+                
+
                 await updateDoc(userRef, {
                     joinedCommunities: arrayUnion(roomName)
                 });
     
                 setCommunities(prev => [...prev, { name: roomName }]);
             }
+            const commHabit=communitySnap.data()?.habit;
+            const habitsCollection = collection(db, "habits");
+            const habitQuery = query(habitsCollection, 
+                where("creator", "==", data.id), 
+                where("name", "==", commHabit)
+            );
+            const habitSnapshot = await getDocs(habitQuery);
     
+            if (habitSnapshot.empty) {
+                
+                const habitRef = doc(habitsCollection);
+                await setDoc(habitRef, {
+                    creator: data.id,
+                    name: commHabit,
+                    lastCompletedDate: null,
+                    streak: 0
+                });
+                toast.success(`Habit "${commHabit}" added successfully!`);
+            } else {
+                toast.info("Habit already exists hence not added..");
+            }
+
+
             toast.success(`Successfully joined "${roomName}"!`);
         } catch (error) {
             console.error("Error joining group:", error);
