@@ -6,15 +6,10 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "headers": [
+    "rewrites": [
       {
-        "source": "**/*.@(js|css|woff2|json|html)",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "max-age=31536000"
-          }
-        ]
+        "source": "**",
+        "destination": "/index.html"
       }
     ]
   }
