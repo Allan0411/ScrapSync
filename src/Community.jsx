@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Community.css';
 import { AuthContext } from "./App";
-import { motion } from "motion/react";
 
 export default function Community() {
     const [roomName, setRoomName] = useState("");
@@ -16,41 +15,41 @@ export default function Community() {
     const navigate = useNavigate(); 
     const { user, data } = useContext(AuthContext);
 
-useEffect(() => {
-    const fetchCommunities = async () => {
-        if (!user?.uid || !data?.id) return; // Ensure data exists before using it
-
-        try {
-            const userRef = doc(db, "Profile", data.id);
-            const userSnap = await getDoc(userRef);
-
-            if (!userSnap.exists()) {
-                console.log("User profile not found, creating new profile...");
-                await setDoc(userRef, { joinedCommunities: [] });
-                return;
+    useEffect(() => {
+        const fetchCommunities = async () => {
+            if (!user?.uid) return;
+    
+            try {
+                const userRef = doc(db, "Profile", data.id);
+                const userSnap = await getDoc(userRef);
+    
+                if (!userSnap.exists()) {
+                    console.log("User profile not found, creating new profile...");
+                    await setDoc(userRef, { joinedCommunities: [] });
+                    return;
+                }
+    
+                const userData = userSnap.data();
+                let userJoinedCommunities = userData.joinedCommunities || [];
+    
+                const querySnapshot = await getDocs(collection(db, "Community"));
+                const existingCommunities = querySnapshot.docs.map(doc => doc.id);
+    
+                const validCommunities = userJoinedCommunities.filter(name => existingCommunities.includes(name));
+    
+                if (validCommunities.length !== userJoinedCommunities.length) {
+                    await updateDoc(userRef, { joinedCommunities: validCommunities });
+                    console.log("Removed non-existent communities from joined list.");
+                }
+                setCommunities(validCommunities.map(name => ({ name })));
+            } catch (error) {
+                console.error("Error fetching communities:", error);
+                toast.error("Failed to fetch communities.");
             }
-
-            const userData = userSnap.data();
-            let userJoinedCommunities = userData.joinedCommunities || [];
-
-            const querySnapshot = await getDocs(collection(db, "Community"));
-            const existingCommunities = querySnapshot.docs.map(doc => doc.id);
-
-            const validCommunities = userJoinedCommunities.filter(name => existingCommunities.includes(name));
-
-            if (validCommunities.length !== userJoinedCommunities.length) {
-                await updateDoc(userRef, { joinedCommunities: validCommunities });
-                console.log("Removed non-existent communities from joined list.");
-            }
-            setCommunities(validCommunities.map(name => ({ name })));
-        } catch (error) {
-            console.error("Error fetching communities:", error);
-            toast.error("Failed to fetch communities.");
-        }
-    };
-
-    fetchCommunities();
-}, [user, data]); 
+        };
+    
+        fetchCommunities();
+    }, [user]);
 
     const handleCreateCommunity = async () => {
         if (!roomName.trim()) {

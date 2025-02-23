@@ -5,7 +5,8 @@ import { collection, query, orderBy, onSnapshot, getDoc, doc, where, updateDoc, 
 import "./Chat.css";
 import { AuthContext } from "./App";
 import { motion } from "motion/react";
-
+import Trophy from "./Trophy";
+import completedTask from "/src/assets/completedTask.png";
 export default function Chat() {
     const { roomName } = useParams();  
     const [messages, setMessages] = useState([]);
@@ -150,8 +151,8 @@ export default function Chat() {
                 <>
                     {/* Chat Messages */}
                     <div className="chat-box">
-                        {messages.map((msg) => (
-                            <p key={msg.id}><strong>{msg.sender}: </strong>{msg.text}</p>
+                        {messages.map((msg, i) => (
+                            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1, transition: i*0.8 }} key={msg.id}><strong>{msg.sender}: </strong>{msg.text}</motion.p>
                         ))}
                     </div>
 
@@ -168,16 +169,27 @@ export default function Chat() {
                     </div>
                 </>
             ) : (
-                <div className="leaderboard-container">
-                    <h3>Leaderboard</h3>
-                    <ul>
-                        {leaderboard.map((entry, index) => (
-                            <li key={index}>
-                                <strong>{entry.name}</strong>: {entry.streak} days
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+<div className="leaderboard-container">
+  <div className="leaderboard-col">
+    <div className="trophy">
+      <h3>Leaderboard</h3> 
+      <Trophy />
+    </div>
+    <ul className="leaderboard">
+      {leaderboard.map((entry, index) => (
+    <li key={index} className="leaderboard-li">
+    {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : ""} 
+    <strong>{entry.name}</strong>: {entry.streak} days
+</li>
+
+      ))}
+    </ul>
+                        </div>
+                      <div className="svg-div">
+<img src={completedTask} alt="Completed Task" className="leaderboard-svg" />
+</div>
+</div>
+
             )}
         </div>
     );

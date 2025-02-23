@@ -140,7 +140,7 @@ useEffect(() => {
   }
 
   return (
-    <motion.div className="profile-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    <motion.div className="profile-screen" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: 2 }}>
       <motion.div className="profile-container" animate={{ y: isChangingPassword ? 95 : 0 }}>
         <div className="profile-picture">{getInitials(name)}</div>
         <div className="form-container">

@@ -228,3 +228,34 @@ font-size: 2rem;
 .home{
   background-color: white;
 }
+.friends-external{
+  display: flex;
+  justify-content: space-between;
+}
+.friends-container{
+  margin-top: 1rem;
+  margin-left: 5rem;
+}
+
+.friend-img{
+  margin-right: 20rem;
+  margin-top: 2rem;
+  width: 450px;
+  height: 450px;
+}
+.menu-container{
+  margin-bottom: 0.2rem;
+}
+
+.no-friend{
+  margin-bottom: 2rem;
+}
+
+.friends-list{
+  margin-top: 2.2rem;
+}
+
+.add-friend{
+  margin-top: 1rem;
+}
+

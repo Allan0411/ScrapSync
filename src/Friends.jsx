@@ -3,32 +3,35 @@ import { db } from './firebase';
 import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, setDoc } from 'firebase/firestore';
 import { AuthContext } from "./App";
 import { toast } from 'react-toastify';
-
+import group from "/src/assets/group.png";
+import group2 from "/src/assets/group2.png";
+import group3 from "/src/assets/group3.png";
+import friend from "/src/assets/friends.png"
 export default function Friends() {
     const { user, data } = useContext(AuthContext);
     const [friends, setFriends] = useState([]);
     const [friendRequests, setFriendRequests] = useState([]);
     const [showAddFriend, setShowAddFriend] = useState(false);
     const [friendEmail, setFriendEmail] = useState("");
-    const [menuOpen, setMenuOpen] = useState(false); // Toggle menu // For dropdown
+    const [menuOpen, setMenuOpen] = useState(false); 
 
-    useEffect(() => {
-        const fetchFriendData = async () => {
-            if (!data?.Email) return;
-            try {
-                const userRef = doc(db, "Friends", data.Email);
-                const userSnap = await getDoc(userRef);
-                if (userSnap.exists()) {
-                    const userData = userSnap.data();
-                    setFriends(userData.friends || []);
-                    setFriendRequests(userData.requests || []);
-                }
-            } catch (error) {
-                console.error("Error fetching friends:", error);
+  useEffect(() => {
+    if (!user || !data?.Email) return;  
+    const fetchFriendData = async () => {
+        try {
+            const userRef = doc(db, "Friends", data.Email);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+                setFriends(userSnap.data().friends || []);
+                setFriendRequests(userSnap.data().requests || []);
             }
-        };
-        fetchFriendData();
-    }, [user]);
+        } catch (error) {
+            console.error("Error fetching friends:", error);
+        }
+    };
+    fetchFriendData();
+}, [user, data]);  
+
 
     const handleAcceptFriendRequest = async (requesterEmail) => {
         try {
@@ -113,10 +116,11 @@ export default function Friends() {
     
 
     return (
+        <div className='friends-external'>
         <div className="friends-container">
             <h2>Friend Requests</h2>
             {friendRequests.length > 0 ? (
-                <ul>
+                <ul  className='friends-ul'>
                     {friendRequests.map((email, index) => (
                         <li key={index}>
                             {email}
@@ -126,10 +130,10 @@ export default function Friends() {
                     ))}
                 </ul>
             ) : (
-                <p>No friend requests.</p>
+                <p className='no friend'>No friend requests.</p>
             )}
 
-            <h2>Friends List</h2>
+            <h2 className='friends-list'>Friends List</h2>
             {friends.length > 0 ? (
                 <ul>
                     {friends.map((email, index) => (
@@ -151,7 +155,7 @@ export default function Friends() {
                 <p>No friends added yet.</p>
             )}
 
-            <h2>Add Friend</h2>
+            <h2 className='add-friend'>Add Friend</h2>
             <button onClick={() => setShowAddFriend(!showAddFriend)}>➕ Add Friend</button>
             {showAddFriend && (
                 <div>
@@ -164,6 +168,14 @@ export default function Friends() {
                     <button onClick={handleSendFriendRequest}>📩 Send Request</button>
                 </div>
             )}
-        </div>
+
+         
+            </div>
+           
+            <img src={group} alt="Friends" className="friend-img" />
+    
+     
+            
+            </div>
     );
 }

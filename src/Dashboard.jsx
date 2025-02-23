@@ -6,6 +6,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { AuthContext } from "./App";
 import Coin from "./Coin.jsx";
 import Hand from "./hand.jsx";
+import { AnimatePresence, motion } from 'motion/react';
 
 export default function Dashboard() {
     const [habitData, setHabitData] = useState([]);
@@ -56,7 +57,7 @@ export default function Dashboard() {
     }
 
     return habitData.length > 0 ? (
-        <div className="dashboard">
+        <motion.div className="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: 2 }}>
             {data && data.Name ? <h1>{data.Name}</h1> : <Hand />}
 
             <div className="dashboard-points">
@@ -78,9 +79,9 @@ export default function Dashboard() {
             <div className="bar">
                 <Pie data={data1} />
             </div>
-        </div>
+        </motion.div>
     ) : (
-        <div className="dashboard">
+        <motion.div className="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: 2 }}>
             {data && data.Name ? <h1>{data.Name}</h1> : <Hand></Hand>}
 
             <div className="dashboard-points">
@@ -92,6 +93,6 @@ export default function Dashboard() {
             <div className="bar">
                     <p>No habits found. Start tracking your habits!</p>
                     </div>
-        </div>
+        </motion.div>
     );
 }
