@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { db } from './firebase';
-import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { AuthContext } from './App';
 
 const MyProducts = () => {
@@ -28,7 +28,7 @@ const MyProducts = () => {
     Other: [],
   };
 
-  // Fetch active items from Firebase
+  // Fetch items from Firebase
   const fetchItems = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "items"));
@@ -37,8 +37,8 @@ const MyProducts = () => {
           id: doc.id,
           ...doc.data(),
         }))
-        .filter((item) => item.email === user?.email && !item.hasCollected); // Filter by user email and active items
-      console.log("Fetched active items:", itemsList); // Debug: Check raw data
+        .filter((item) => item.email === user?.email); // Filter by user email
+      console.log("Fetched items:", itemsList); // Debug: Check raw data
       setItems(itemsList);
       await translateAllItems(itemsList); // Added to translate on fetch
     } catch (e) {
@@ -84,16 +84,6 @@ const MyProducts = () => {
     }
   };
 
-  // Mark an item as done (update hasCollected)
-  const markAsDone = async (id) => {
-    try {
-      await updateDoc(doc(db, "items", id), { hasCollected: true });
-      fetchItems();
-    } catch (e) {
-      console.error("Failed to mark item as done:", e);
-    }
-  };
-
   // Handle image upload
   const handleImageInput = async (event) => {
     const file = event.target.files[0];
@@ -134,8 +124,8 @@ const MyProducts = () => {
       const sourceLang = detectLanguage(text);
       console.log(`Attempting to translate "${text}" from ${sourceLang} to ${targetLang}`);
       const response = await fetch(
-        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.trim())}&langpair=${sourceLang}|${targetLang}
-      `);
+        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.trim())}&langpair=${sourceLang}|${targetLang}`
+      );
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data = await response.json();
       const translated = data.responseData?.translatedText || text;
@@ -182,7 +172,6 @@ const MyProducts = () => {
       cancelButton: "Cancel",
       imageLabel: "Image",
       none: "None",
-      markAsDone: "Mark as Done",
     },
     hi: {
       title: "मेरी लिस्टिंग",
@@ -198,7 +187,6 @@ const MyProducts = () => {
       cancelButton: "रद्द करें",
       imageLabel: "छवि",
       none: "कोई नहीं",
-      markAsDone: "पूर्ण करें",
     },
   };
 
@@ -214,56 +202,49 @@ const MyProducts = () => {
         </button>
       </div>
 
-      {/* Active Items List */}
+      {/* Items List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {items
-          .filter((item) => !item.hasCollected) // Show only active (not collected) items
-          .map((item) => (
-            <div key={item.id} className="border rounded shadow p-4 relative">
-              <img
-                src={item.imageURL}
-                alt="Item"
-                className="w-full h-32 object-cover rounded"
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: "150px", // Restricts the height
-                  objectFit: "cover", // Ensures the image is cropped nicely within the bounds
-                }}
-              />
-              <h2 className="font-semibold mt-2">
-                {text[language].location}: {translatedItems[item.id]?.location || item.location || "N/A"}
-              </h2>
-              <p>
-                {text[language].pickupDate}: {new Date(item.pickupDate).toLocaleString()}
-              </p>
-              <p>
-                {text[language].price}: ${item.price || "N/A"}
-              </p>
-              <p>
-                {text[language].wasteType}: {translatedItems[item.id]?.wasteType || item.wasteType || "N/A"}
-              </p>
-              <p>
-                {text[language].subtype}: {translatedItems[item.id]?.subtype || item.subtype || "N/A"}
-              </p>
-              <p>
-                {text[language].status}: {item.status ? "Active" : "Inactive"}
-              </p>
-              <div className="mt-2 flex space-x-2">
-                <button
-                  onClick={() => deleteItem(item.id)}
-                  className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-                >
-                  ✕
-                </button>
-                <button
-                  onClick={() => markAsDone(item.id)}
-                  className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
-                >
-                  {text[language].markAsDone}
-                </button>
-              </div>
-            </div>
-          ))}
+        {items.map((item) => (
+          <div key={item.id} className="border rounded shadow p-4 relative">
+            <img
+              src={item.imageURL}
+              alt="Item"
+              className="w-full h-32 object-cover rounded"
+              style={{
+                maxWidth: "100%",
+                maxHeight: "150px", // Restricts the height
+                objectFit: "cover", // Ensures the image is cropped nicely within the bounds
+              }}
+            />
+            <h2 className="font-semibold mt-2">
+              {text[language].location}: {translatedItems[item.id]?.location || item.location || "N/A"}
+            </h2>
+            <p>
+              {text[language].pickupDate}: {new Date(item.pickupDate).toLocaleString()}
+            </p>
+            <p>
+              {text[language].price}: ${item.price || "N/A"}
+            </p>
+            <p>
+              {text[language].wasteType}: {translatedItems[item.id]?.wasteType || item.wasteType || "N/A"}
+            </p>
+            <p>
+              {text[language].subtype}: {translatedItems[item.id]?.subtype || item.subtype || "N/A"}
+            </p>
+            <p>
+              {text[language].status}: {item.status ? "Active" : "Inactive"}
+            </p>
+            <p>
+              {text[language].collected}: {item.hasCollected ? "Yes" : "No"}
+            </p>
+            <button
+              onClick={() => deleteItem(item.id)}
+              className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
       </div>
 
       {/* Floating Plus Button */}

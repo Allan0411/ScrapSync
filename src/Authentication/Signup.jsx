@@ -35,8 +35,7 @@ const createUser = async () => {
         await addDoc(profileCollection, {
             Name: name, 
             Email: email,
-            Password: password, 
-            Points: 0,
+            Password: password
         });
         navigate("/Profile", {state:{password: password, name:name}});
     } catch (error) {
