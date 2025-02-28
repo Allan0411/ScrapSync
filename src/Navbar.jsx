@@ -15,7 +15,7 @@ export default function Navbar() {
             to="/Community"
             className={({ isActive }) => (isActive ? "nv active" : "nv")}
           >
-            Community
+            Chat
           </NavLink>
         </li>
         <li>

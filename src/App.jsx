@@ -12,7 +12,7 @@ import { getUser } from "./getUser";
 export const AuthContext = createContext(null);
 import Chat from './Chat';
 import Community from './Community';
-import Friends from './Friends';
+
 import Dashboard from "./Dashboard.jsx";
 import { generateToken } from './firebase';
 import { onMessage } from 'firebase/messaging'; 
@@ -69,7 +69,7 @@ function Layout() {
         <Route path="/Community" element={user ? <Community /> : <Navigate to="/Signin" />} />
         <Route path="/chat/:roomName" element={user ? <Chat /> : <Navigate to="/Signin" />} />
         <Route path="/Dashboard" element={user ? <Dashboard /> : <Navigate to="/Signin" />} />
-        <Route path="/Friends" element={user ? <Friends /> : <Navigate to="/Signin" />} />
+        
         <Route path="/MyProducts" element={user ? <MyProducts /> : <Navigate to="/Signin" />} />
 
         
