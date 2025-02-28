@@ -172,7 +172,7 @@ export default function Chat() {
   <div className="leaderboard-col">
     <div className="trophy">
       <h3>Leaderboard</h3> 
-      <Trophy />
+
     </div>
     <ul className="leaderboard">
       {leaderboard.map((entry, index) => (
