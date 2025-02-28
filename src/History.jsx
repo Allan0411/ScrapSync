@@ -9,17 +9,17 @@ const History = () => {
   const [translatedItems, setTranslatedItems] = useState({}); // Added for translations
   const [language, setLanguage] = useState("en"); // Added for language toggle
 
-  // Fetch completed items from Firebase
+  // Fetch completed items from the 'history' collection
   const fetchItems = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "items"));
+      const querySnapshot = await getDocs(collection(db, "history"));
       const itemsList = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }))
-        .filter((item) => item.email === user?.email && item.hasCollected); // Filter by user email and completed items
-      console.log("Fetched history items:", itemsList); // Debug: Check raw data
+        .filter((item) => item.email === user?.email); // Filter by user email
+      console.log("Fetched history items from 'history' collection:", itemsList); // Debug: Check raw data
       setItems(itemsList);
       await translateAllItems(itemsList); // Added to translate on fetch
     } catch (e) {
@@ -44,9 +44,9 @@ const History = () => {
     try {
       const sourceLang = detectLanguage(text);
       console.log(`Attempting to translate "${text}" from ${sourceLang} to ${targetLang}`);
-      const response = await fetch(
-        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.trim())}&langpair=${sourceLang}|${targetLang}
-      `);
+      const response = await fetch(`
+        https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.trim())}&langpair=${sourceLang}|${targetLang}
+     ` );
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data = await response.json();
       const translated = data.responseData?.translatedText || text;
@@ -85,9 +85,7 @@ const History = () => {
       pickupDate: "Pickup Date",
       price: "Price",
       wasteType: "Waste Type",
-      subtype: "Subtype",
-      status: "Status",
-      collected: "Collected",
+      historyTimestamp: "Completed On",
       noHistory: "No history available",
     },
     hi: {
@@ -96,9 +94,7 @@ const History = () => {
       pickupDate: "पिकअप तिथि",
       price: "मूल्य",
       wasteType: "कचरा प्रकार",
-      subtype: "उप-प्रकार",
-      status: "स्थिति",
-      collected: "एकत्रित",
+      historyTimestamp: "पूर्ण हुआ",
       noHistory: "कोई इतिहास उपलब्ध नहीं",
     },
   };
@@ -109,19 +105,19 @@ const History = () => {
         <h1 className="text-2xl font-bold">{text[language].title}</h1>
         <button
           onClick={toggleLanguage}
-          className="mb-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+          className="language"
         >
           {language === "en" ? "हिन्दी" : "English"}
         </button>
       </div>
 
       {/* History Items List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="history-list">
         {items.length === 0 ? (
           <p>{text[language].noHistory}</p>
         ) : (
           items.map((item) => (
-            <div key={item.id} className="border rounded shadow p-4 relative opacity-50">
+            <div key={item.id} className="history-list-item">
               <img
                 src={item.imageURL}
                 alt="Item (History)"
@@ -145,13 +141,7 @@ const History = () => {
                 {text[language].wasteType}: {translatedItems[item.id]?.wasteType || item.wasteType || "N/A"}
               </p>
               <p>
-                {text[language].subtype}: {translatedItems[item.id]?.subtype || item.subtype || "N/A"}
-              </p>
-              <p>
-                {text[language].status}: {item.status ? "Active" : "Inactive"}
-              </p>
-              <p>
-                {text[language].collected}: {item.hasCollected ? "Yes" : "No"}
+                {text[language].historyTimestamp}: {new Date(item.historyTimestamp).toLocaleString()}
               </p>
             </div>
           ))
