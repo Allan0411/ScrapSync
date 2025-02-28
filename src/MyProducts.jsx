@@ -18,6 +18,8 @@ const MyProducts = () => {
   });
   const [items, setItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [translatedItems, setTranslatedItems] = useState({}); // Added for translations
+  const [language, setLanguage] = useState("en"); // Added for language toggle
 
   const wasteOptions = {
     Plastic: ["Thermoplastic", "Thermosetting Plastic", "Other"],
@@ -36,7 +38,9 @@ const MyProducts = () => {
           ...doc.data(),
         }))
         .filter((item) => item.email === user?.email); // Filter by user email
+      console.log("Fetched items:", itemsList); // Debug: Check raw data
       setItems(itemsList);
+      await translateAllItems(itemsList); // Added to translate on fetch
     } catch (e) {
       console.error("Failed to fetch items:", e);
     }
@@ -106,9 +110,97 @@ const MyProducts = () => {
     }
   };
 
+  // Detect language using a simple heuristic
+  const detectLanguage = (text) => {
+    if (!text || typeof text !== "string") return "en";
+    const hasHindi = /[\u0900-\u097F]/.test(text.trim()); // Check for Devanagari script
+    return hasHindi ? "hi" : "en";
+  };
+
+  // Translate text using MyMemory API
+  const translateText = async (text, targetLang) => {
+    if (!text || typeof text !== "string") return "N/A";
+    try {
+      const sourceLang = detectLanguage(text);
+      console.log(`Attempting to translate "${text}" from ${sourceLang} to ${targetLang}`);
+      const response = await fetch(
+        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.trim())}&langpair=${sourceLang}|${targetLang}`
+      );
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      const data = await response.json();
+      const translated = data.responseData?.translatedText || text;
+      console.log(`Successfully translated "${text}" to: ${translated}`);
+      return translated;
+    } catch (error) {
+      console.error("Error translating with MyMemory:", error);
+      return text; // Fallback to original text on error
+    }
+  };
+
+  // Translate all items based on current language
+  const translateAllItems = async (itemsToTranslate) => {
+    const translations = {};
+    for (const item of itemsToTranslate) {
+      translations[item.id] = {
+        location: await translateText(item.location || "N/A", language),
+        wasteType: await translateText(item.wasteType || "N/A", language),
+        subtype: await translateText(item.subtype || "N/A", language),
+      };
+    }
+    setTranslatedItems(translations);
+  };
+
+  // Toggle language
+  const toggleLanguage = async () => {
+    const newLanguage = language === "en" ? "hi" : "en";
+    setLanguage(newLanguage);
+    await translateAllItems(items);
+  };
+
+  const text = {
+    en: {
+      title: "My Listings",
+      location: "Location",
+      pickupDate: "Pickup Date",
+      price: "Price",
+      wasteType: "Waste Type",
+      subtype: "Subtype",
+      status: "Status",
+      collected: "Collected",
+      addListing: "Add Listing",
+      addButton: "Add",
+      cancelButton: "Cancel",
+      imageLabel: "Image",
+      none: "None",
+    },
+    hi: {
+      title: "मेरी लिस्टिंग",
+      location: "स्थान",
+      pickupDate: "पिकअप तिथि",
+      price: "मूल्य",
+      wasteType: "कचरा प्रकार",
+      subtype: "उप-प्रकार",
+      status: "स्थिति",
+      collected: "एकत्रित",
+      addListing: "लिस्टिंग जोड़ें",
+      addButton: "जोड़ें",
+      cancelButton: "रद्द करें",
+      imageLabel: "छवि",
+      none: "कोई नहीं",
+    },
+  };
+
   return (
     <div className="p-4 relative min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">My Listings</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">{text[language].title}</h1>
+        <button
+          onClick={toggleLanguage}
+          className="mb-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+        >
+          {language === "en" ? "हिन्दी" : "English"}
+        </button>
+      </div>
 
       {/* Items List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -124,18 +216,32 @@ const MyProducts = () => {
                 objectFit: "cover", // Ensures the image is cropped nicely within the bounds
               }}
             />
-            <h2 className="font-semibold mt-2">Location: {item.location}</h2>
-            <p>Pickup Date: {new Date(item.pickupDate).toLocaleString()}</p>
-            <p>Price: ${item.price}</p>
-            <p>Waste Type: {item.wasteType}</p>
-            <p>Subtype: {item.subtype || "N/A"}</p>
-            <p>Status: {item.status ? "Active" : "Inactive"}</p>
-            <p>Collected: {item.hasCollected ? "Yes" : "No"}</p>
+            <h2 className="font-semibold mt-2">
+              {text[language].location}: {translatedItems[item.id]?.location || item.location || "N/A"}
+            </h2>
+            <p>
+              {text[language].pickupDate}: {new Date(item.pickupDate).toLocaleString()}
+            </p>
+            <p>
+              {text[language].price}: ${item.price || "N/A"}
+            </p>
+            <p>
+              {text[language].wasteType}: {translatedItems[item.id]?.wasteType || item.wasteType || "N/A"}
+            </p>
+            <p>
+              {text[language].subtype}: {translatedItems[item.id]?.subtype || item.subtype || "N/A"}
+            </p>
+            <p>
+              {text[language].status}: {item.status ? "Active" : "Inactive"}
+            </p>
+            <p>
+              {text[language].collected}: {item.hasCollected ? "Yes" : "No"}
+            </p>
             <button
               onClick={() => deleteItem(item.id)}
               className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
             >
-              &#x2715;
+              ✕
             </button>
           </div>
         ))}
@@ -153,7 +259,7 @@ const MyProducts = () => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded shadow-lg w-96">
-            <h2 className="text-xl font-bold mb-4">Add Listing</h2>
+            <h2 className="text-xl font-bold mb-4">{text[language].addListing}</h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -162,7 +268,7 @@ const MyProducts = () => {
               className="space-y-4"
             >
               <div>
-                <label className="block text-sm font-medium">Location</label>
+                <label className="block text-sm font-medium">{text[language].location}</label>
                 <input
                   type="text"
                   value={item.location}
@@ -170,11 +276,13 @@ const MyProducts = () => {
                     setItem((prev) => ({ ...prev, location: e.target.value }))
                   }
                   className="border rounded p-2 w-full"
+                  style={{ fontFamily: "inherit" }} // Support Hindi input
+                  placeholder={language === "en" ? "e.g., Delhi" : "उदाहरण: दिल्ली"}
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium">Pickup Date</label>
+                <label className="block text-sm font-medium">{text[language].pickupDate}</label>
                 <input
                   type="datetime-local"
                   value={item.pickupDate}
@@ -186,7 +294,7 @@ const MyProducts = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium">Price</label>
+                <label className="block text-sm font-medium">{text[language].price}</label>
                 <input
                   type="number"
                   value={item.price}
@@ -198,7 +306,7 @@ const MyProducts = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium">Waste Type</label>
+                <label className="block text-sm font-medium">{text[language].wasteType}</label>
                 <select
                   value={item.wasteType}
                   onChange={(e) =>
@@ -219,7 +327,7 @@ const MyProducts = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium">Subtype</label>
+                <label className="block text-sm font-medium">{text[language].subtype}</label>
                 <select
                   value={item.subtype}
                   onChange={(e) =>
@@ -228,7 +336,7 @@ const MyProducts = () => {
                   className="border rounded p-2 w-full"
                   disabled={!wasteOptions[item.wasteType].length}
                 >
-                  <option value="">None</option>
+                  <option value="">{text[language].none}</option>
                   {wasteOptions[item.wasteType].map((subtype) => (
                     <option key={subtype} value={subtype}>
                       {subtype}
@@ -237,7 +345,7 @@ const MyProducts = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium">Image</label>
+                <label className="block text-sm font-medium">{text[language].imageLabel}</label>
                 <input
                   type="file"
                   onChange={handleImageInput}
@@ -250,13 +358,13 @@ const MyProducts = () => {
                   onClick={() => setIsModalOpen(false)}
                   className="bg-gray-300 text-gray-800 px-4 py-2 rounded"
                 >
-                  Cancel
+                  {text[language].cancelButton}
                 </button>
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
-                  Add
+                  {text[language].addButton}
                 </button>
               </div>
             </form>
