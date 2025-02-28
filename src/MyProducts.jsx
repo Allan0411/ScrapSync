@@ -65,59 +65,6 @@ const MyProducts = () => {
       });
       setIsModalOpen(false);
       fetchItems();
-<<<<<<< HEAD
-    }, []);
-  
-    // Add a new item
-    const addItem = async () => {
-      try {
-        await addDoc(collection(db, "items"), {
-          ...item,
-        });
-        setItem({
-          email: user?.email || "",
-          location: "",
-          pickupDate: "",
-          price: "",
-          imageURL: "",
-          wasteType: "Plastic",
-          subtype: "",
-          status: true,
-          hasCollected: false,
-        });
-        setIsModalOpen(false);
-        fetchItems();
-      } catch (e) {
-        console.error("Failed to add item:", e);
-      }
-    };
-  
-    // Handle image upload
-    const handleImageInput = async (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-  
-      const data = new FormData();
-      data.append("file", file);
-      data.append("upload_preset", "Test_Preset");
-      data.append("cloud_name", "diq0bcrjl");
-  
-      try {
-        const res = await fetch("https://api.cloudinary.com/v1_1/diq0bcrjl/image/upload", {
-          method: "POST",
-          body: data,
-        });
-        const result = await res.json();
-        if (result.secure_url) {
-          setItem((prev) => ({ ...prev, imageURL: result.secure_url }));
-        } else {
-          throw new Error("Failed to upload image.");
-        }
-      } catch (e) {
-        console.error("Failed to upload image: ", e);
-      }
-    };
-=======
     } catch (e) {
       console.error("Failed to add item:", e);
     }
@@ -158,7 +105,6 @@ const MyProducts = () => {
       console.error("Failed to upload image: ", e);
     }
   };
->>>>>>> 490080b9fd0ad112784347b559ee42efaa8f13a7
 
   return (
     <div className="p-4 relative min-h-screen">
