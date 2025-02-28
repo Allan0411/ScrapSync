@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'; 
 import Hand from './hand';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 const ProfileScreen = () => {
   const { user, setUser, data, setData } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -22,6 +23,9 @@ const ProfileScreen = () => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(true);
+    const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState('');
+  const [document, setDocument] = useState(null);
   
   const auth = getAuth();
 useEffect(() => {
@@ -148,6 +152,48 @@ const handleDeleteAccount = () => {
     setErrorMessage('');
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const storageRef = ref(storage, `profile_pictures/${user.uid}`);
+    try {
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      setImageUrl(downloadURL);
+      update("ProfilePicture", downloadURL);
+    } catch (error) {
+      toast.error("Error uploading image: " + error.message, { position: "top-center" });
+    }
+  };
+
+  const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  setDocument(file);
+};
+
+  const handleDocumentUpload = async (e) => {
+    if (setDocument) {
+      toast.success("Document Sent For Verification");
+      setDocument('');
+    }
+    else {
+            toast.success("Error");
+    }
+    // const file = e.target.files[0];
+    // if (!file) return;
+
+    // const storageRef = ref(storage, `documents/${user.uid}/${file.name}`);
+    // try {
+    //   await uploadBytes(storageRef, file);
+    //   const downloadURL = await getDownloadURL(storageRef);
+    //   setDocument(downloadURL);
+    //   update("Document", downloadURL);
+    // } catch (error) {
+    //   toast.error("Error uploading document: " + error.message, { position: "top-center" });
+    // }
+  };
   const getInitials = (name) => {
     return name ? name.charAt(0) : ' ';
   };
@@ -211,6 +257,18 @@ const handleDeleteAccount = () => {
           <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} className="delete-account-button" onClick={handleDeleteAccount}>
             Delete Account
           </motion.button>
+        <div className="form-group">
+  <label>Upload Document</label>
+  <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileChange} />
+  <motion.button 
+    whileTap={{ scale: 0.9 }} 
+    whileHover={{ scale: 1.05 }} 
+    onClick={handleDocumentUpload}
+  >
+    Upload
+  </motion.button>
+</div>
+
         </div>
       </motion.div>
     </motion.div>

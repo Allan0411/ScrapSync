@@ -15,6 +15,8 @@ const MyProducts = () => {
     subtype: "",
     status: true,
     hasCollected: false,
+    Kg: "", // User-input for estimated weight in kilograms
+    points: 0, // Hidden points field, calculated internally
   });
   const [items, setItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,13 +54,22 @@ const MyProducts = () => {
 
   // Add a new item
   const addItem = async () => {
-    
-if (!item.imageURL) {
-    console.error("Image URL is missing. Please upload an image.");
-    return;}
+    if (!item.imageURL) {
+      console.error("Image URL is missing. Please upload an image.");
+      return;
+    }
+    if (!item.Kg) {
+      console.error("Estimated Kg is required. Please enter a weight.");
+      return;
+    }
+
+    // Calculate points based on Kg (hidden from user)
+    const pointsToAdd = parseInt(item.Kg, 10) > 10 ? 50 : 10;
+
     try {
       await addDoc(collection(db, "items"), {
         ...item,
+        points: pointsToAdd, // Add points to the item in Firestore, hidden from user
       });
       setItem({
         email: user?.email || "",
@@ -70,6 +81,8 @@ if (!item.imageURL) {
         subtype: "",
         status: true,
         hasCollected: false,
+        Kg: "", // Reset Kg field
+        points: 0, // Reset points (not user-editable)
       });
       setIsModalOpen(false);
       fetchItems();
@@ -88,7 +101,8 @@ if (!item.imageURL) {
     }
   };
 
-   const markAsDone = async (id) => {
+  // Mark an item as done: delete from 'items' and add to 'history'
+  const markAsDone = async (id) => {
     try {
       // Get the item to be marked as done
       const itemToMove = items.find((item) => item.id === id);
@@ -97,7 +111,7 @@ if (!item.imageURL) {
       // Delete the item from the 'items' collection
       await deleteDoc(doc(db, "items", id));
 
-      // Add the item to the 'history' collection with an updated timestamp
+      // Add the item to the 'history' collection with an updated timestamp, including points
       await addDoc(collection(db, "history"), {
         ...itemToMove,
         historyTimestamp: new Date().toISOString(), // Add timestamp for history tracking
@@ -109,7 +123,7 @@ if (!item.imageURL) {
       console.error("Failed to mark item as done:", e);
     }
   };
-  // Handle image upload
+
   // Handle image upload
   const handleImageInput = async (event) => {
     const file = event.target.files[0];
@@ -149,8 +163,8 @@ if (!item.imageURL) {
     try {
       const sourceLang = detectLanguage(text);
       console.log(`Attempting to translate "${text}" from ${sourceLang} to ${targetLang}`);
-      const response = await fetch(
-        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.trim())}&langpair=${sourceLang}|${targetLang}
+      const response = await fetch(`
+        https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.trim())}&langpair=${sourceLang}|${targetLang}
       `);
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data = await response.json();
@@ -199,6 +213,7 @@ if (!item.imageURL) {
       imageLabel: "Image",
       none: "None",
       markAsDone: "Mark as Done",
+      Kg: "Estimated Kg", // User-input only for estimated weight
     },
     hi: {
       title: "मेरी लिस्टिंग",
@@ -215,9 +230,9 @@ if (!item.imageURL) {
       imageLabel: "छवि",
       none: "कोई नहीं",
       markAsDone: "पूर्ण करें",
+      Kg: "अनुमानित किलोग्राम", // User-input only for estimated weight in Hindi
     },
   };
-      
 
   return (
     <div className="listing parent">
@@ -232,7 +247,60 @@ if (!item.imageURL) {
       </div>
 
       {/* Active Items List */}
-     
+      <div className="list-item-list">
+        {items
+          .filter((item) => !item.hasCollected) // Show only active (not collected) items
+          .map((item) => (
+            <div key={item.id} className="list-item">
+              <img
+                src={item.imageURL}
+                alt="Item"
+                className="list-image"
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "150px", // Restricts the height
+                  objectFit: "cover", // Ensures the image is cropped nicely within the bounds
+                }}
+              />
+              <p className="list-location">
+                {text[language].location}: {translatedItems[item.id]?.location || item.location || "N/A"}
+              </p>
+              <p className="list-location">
+                {text[language].pickupDate}: {new Date(item.pickupDate).toLocaleString()}
+              </p>
+              <p className="list-location">
+                {text[language].price}: ${item.price || "N/A"}
+              </p>
+              <p className="list-location">
+                {text[language].wasteType}: {translatedItems[item.id]?.wasteType || item.wasteType || "N/A"}
+              </p>
+              <p className="list-location">
+                {text[language].subtype}: {translatedItems[item.id]?.subtype || item.subtype || "N/A"}
+              </p>
+              <p className="list-location">
+                {text[language].Kg}: {item.Kg || "N/A"} kg
+              </p>
+              <p className="list-location">
+                {text[language].status}: {item.status ? "Active" : "Inactive"}
+              </p>
+              <div className="list-location">
+                <button
+                  onClick={() => deleteItem(item.id)}
+                  className="cancel"
+                >
+                  ✕
+                </button>
+                <button
+                  onClick={() => markAsDone(item.id)}
+                  className="markasdone"
+                >
+                  {text[language].markAsDone}
+                </button>
+              </div>
+            </div>
+          ))}
+      </div>
+
       {/* Floating Plus Button */}
       <button
         onClick={() => setIsModalOpen(true)}
@@ -331,6 +399,20 @@ if (!item.imageURL) {
                 </select>
               </div>
               <div>
+                <label className="block text-sm font-medium">{text[language].Kg}</label>
+                <input
+                  type="number"
+                  value={item.Kg}
+                  onChange={(e) =>
+                    setItem((prev) => ({ ...prev, Kg: e.target.value }))
+                  }
+                  className="border rounded p-2 w-full"
+                  style={{ fontFamily: "inherit" }} // Support Hindi numeric input
+                  placeholder={language === "en" ? "e.g., 50" : "उदाहरण: 50"}
+                  required
+                />
+              </div>
+              <div>
                 <label className="block text-sm font-medium">{text[language].imageLabel}</label>
                 <input
                   type="file"
@@ -357,58 +439,6 @@ if (!item.imageURL) {
           </div>
         </div>
       )}
-
-       <div className="list-item-list">
-        {items
-          .filter((item) => !item.hasCollected) // Show only active (not collected) items
-          .map((item) => (
-            <div key={item.id} className="list-item">
-              <img
-                src={item.imageURL}
-                alt="Item"
-                className="list-image"
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: "150px", // Restricts the height
-                  objectFit: "cover", // Ensures the image is cropped nicely within the bounds
-                }}
-              />
-              <p className="list-location">
-                {text[language].location}: {translatedItems[item.id]?.location || item.location || "N/A"}
-              </p>
-              <p className="list-location" >
-                {text[language].pickupDate}: {new Date(item.pickupDate).toLocaleString()}
-              </p  >
-              <p className="list-location">
-                {text[language].price}: ${item.price || "N/A"}
-              </p>
-              <p className="list-location">
-                {text[language].wasteType}: {translatedItems[item.id]?.wasteType || item.wasteType || "N/A"}
-              </p>
-              <p>
-                {text[language].subtype}: {translatedItems[item.id]?.subtype || item.subtype || "N/A"}
-              </p>
-              <p className="list-location">
-                {text[language].status}: {item.status ? "Active" : "Inactive"}
-              </p>
-              <div className="list-location">
-                <button
-                  onClick={() => deleteItem(item.id)}
-                  className="cancel"
-                >
-                  ✕
-                </button>
-                <button
-                  onClick={() => markAsDone(item.id)}
-                  className="markasdone"
-                >
-                  {text[language].markAsDone}
-                </button>
-              </div>
-            </div>
-          ))}
-      </div>
-
     </div>
   );
 };

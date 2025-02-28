@@ -18,7 +18,7 @@ body {
   background: #fdfdfd;
   padding: 2vh 2vw;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(183, 231, 164, 0.89);
+  /* box-shadow: 0 4px 8px rgba(183, 231, 164, 0.89); */
   width: 60vw;
   max-width: 90vw;
   text-align: center;

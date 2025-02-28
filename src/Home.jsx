@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { db } from "./firebase";
-import { collection, getDocs,query,where,addDoc} from "firebase/firestore";
+import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
 import { AuthContext } from "./App";
 import { useNavigate } from "react-router-dom";
 
@@ -13,17 +13,17 @@ const HomePage = () => {
   const [language, setLanguage] = useState("en");
   const [searchTerm, setSearchTerm] = useState(""); // Added for search
 
-  const addIndexDocument=async(userArray)=>{
-    try{
-      const docRef=await addDoc(collection(db,"Inbox"),{users:userArray});
+  const addIndexDocument = async (userArray) => {
+    try {
+      const docRef = await addDoc(collection(db, "Inbox"), { users: userArray });
       console.log("Document successfully written!");
       console.log(docRef);
       return docRef;
-    }
-    catch(error){
-      console.error("Error adding document:",error);
+    } catch (error) {
+      console.error("Error adding document:", error);
     }
   };
+
   const fetchItems = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "items"));
@@ -99,6 +99,7 @@ const HomePage = () => {
       wasteType: "Waste Type",
       searchPlaceholder: "Search by waste type...",
       noItems: "No items available",
+      points: "Points", // Added for points label
     },
     hi: {
       location: "स्थान",
@@ -107,6 +108,7 @@ const HomePage = () => {
       wasteType: "कचरा प्रकार",
       searchPlaceholder: "कचरा प्रकार से खोजें...",
       noItems: "कोई आइटम उपलब्ध नहीं",
+      points: "अंक", // Added for points label in Hindi
     },
   };
 
@@ -119,49 +121,46 @@ const HomePage = () => {
     return matches;
   });
 
-  const handleChat=async (item)=>{
+  const handleChat = async (item) => {
     console.log(item.email);
     console.log(user.email);
-    let userArray=[];
-    var q=query(collection(db, "Profile"), where("Email", "==", item.email));
+    let userArray = [];
+    var q = query(collection(db, "Profile"), where("Email", "==", item.email));
     var querySnapshot = await getDocs(q);
-    if(!querySnapshot.empty){
+    if (!querySnapshot.empty) {
       console.log(querySnapshot.docs[0].id);
       userArray.push(querySnapshot.docs[0].id);
-    }
-    else{
+    } else {
       console.log("No document found with this email!");
     }
-    let p=query(collection(db, "Profile"), where("Email", "==", user.email));
+    let p = query(collection(db, "Profile"), where("Email", "==", user.email));
     let p_querySnapshot = await getDocs(p);
 
-    if(!p_querySnapshot.empty){
+    if (!p_querySnapshot.empty) {
       console.log(p_querySnapshot.docs[0].id);
       userArray.push(p_querySnapshot.docs[0].id);
-    }
-    else{
+    } else {
       console.log("No document found with this email!");
     }
     console.log(userArray);
-    
-    const inboxQuery=query(collection(db,"Inbox"),where("users","==",userArray));
-    let inbox= await getDocs(inboxQuery);
-    
-    if(inbox.empty){
-    const newdocRef=addIndexDocument(userArray);
-    console.log(newdocRef.id);
-    redirectToChat(newdocRef.id);
-    }
-    else{
+
+    const inboxQuery = query(collection(db, "Inbox"), where("users", "==", userArray));
+    let inbox = await getDocs(inboxQuery);
+
+    if (inbox.empty) {
+      const newdocRef = addIndexDocument(userArray);
+      console.log(newdocRef.id);
+      redirectToChat(newdocRef.id);
+    } else {
       console.log("Document already exists");
       redirectToChat(inbox.docs[0].id);
     }
-   
-};
+  };
 
-const redirectToChat = (chatId) => {
-  window.location.href = `/chat/${chatId}`; // Adjust the route as needed
-};
+  const redirectToChat = (chatId) => {
+    window.location.href =`/chat/${chatId}`; // Adjust the route as needed
+  };
+
   return (
     <div className="home">
       <div className="flex justify-between items-center mb-4">
@@ -176,15 +175,16 @@ const redirectToChat = (chatId) => {
 
       {/* Search Bar */}
       <div>
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder={text[language].searchPlaceholder}
-        className="search-bar"
-        style={{ fontFamily: "inherit" }} // Support Hindi input
-      />
-</div>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder={text[language].searchPlaceholder}
+          className="search-bar"
+          style={{ fontFamily: "inherit" }} // Support Hindi input
+        />
+      </div>
+
       {/* Grid Items */}
       <div className="grid-home">
         {filteredItems.length === 0 ? (
@@ -209,29 +209,36 @@ const redirectToChat = (chatId) => {
               <p>
                 {text[language].wasteType}: {translatedItems[item.id]?.wasteType || item.wasteType || "N/A"}
               </p>
+              <p className="points-display"> {/* Hidden from manipulation, just display */}
+                {text[language].points}: {item.points || 0}
+              </p>
             </div>
           ))
         )}
       </div>
 
-    {selectedItem && (
+      {selectedItem && (
         <div className="modal">
-             <button
-              className="modal-button"
-              onClick={() => setSelectedItem(null)} 
-            >
-              Close
-            </button>
+          <button
+            className="modal-button"
+            onClick={() => setSelectedItem(null)}
+          >
+            Close
+          </button>
           <div className="modal-image">
-                    <img src={selectedItem.imageURL} alt="Item" className="image" />
+            <img src={selectedItem.imageURL} alt="Item" className="image" />
           </div>
-          <button className="buy-button" onClick={()=>handleChat(selectedItem)}>Chat With</button>
+          <button className="buy-button" onClick={() => handleChat(selectedItem)}>
+            Chat With
+          </button>
           <div className="text">
-           <p>Location: {selectedItem.location} </p>
+            <p>Location: {selectedItem.location}</p>
             <p>Pickup Date: {new Date(selectedItem.pickupDate).toLocaleString()}</p>
             <p>Price: ${selectedItem.price}</p>
             <p>Waste Type: {selectedItem.wasteType}</p>
-         
+            <p className="points-display"> {/* Hidden from manipulation, just display */}
+              {text[language].points}: {selectedItem.points || 0}
+            </p>
           </div>
         </div>
       )}
