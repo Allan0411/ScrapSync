@@ -30,7 +30,7 @@ const HomePage = () => {
       <h1 className="text-2xl font-bold mb-4">Scrap Market</h1>
 
       {/* Grid Items */}
-      <div className="grid-home">
+      <div className="grid-home" >
         {items.map((item) => (
           <div
             key={item.id}
