@@ -20,7 +20,7 @@ export default function Navbar() {
         </li>
         <li>
           <NavLink
-            to="/Recycle"
+            to="/ChatInbox"
             className={({ isActive }) => (isActive ? "nv active" : "nv")}
           >
             Inbox
