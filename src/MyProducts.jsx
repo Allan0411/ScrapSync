@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { db } from './firebase';
-import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { AuthContext } from './App';
 
 const MyProducts = () => {
@@ -28,7 +28,7 @@ const MyProducts = () => {
     Other: [],
   };
 
-  // Fetch items from Firebase
+  // Fetch active items from Firebase
   const fetchItems = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "items"));
@@ -37,8 +37,8 @@ const MyProducts = () => {
           id: doc.id,
           ...doc.data(),
         }))
-        .filter((item) => item.email === user?.email); // Filter by user email
-      console.log("Fetched items:", itemsList); // Debug: Check raw data
+        .filter((item) => item.email === user?.email && !item.hasCollected); // Filter by user email and active items
+      console.log("Fetched active items:", itemsList); // Debug: Check raw data
       setItems(itemsList);
       await translateAllItems(itemsList); // Added to translate on fetch
     } catch (e) {
@@ -52,10 +52,10 @@ const MyProducts = () => {
 
   // Add a new item
   const addItem = async () => {
-    if (!item.imageURL) {
-        console.error("Image URL is missing. Please upload an image.");
-        return;
-    }
+    
+if (!item.imageURL) {
+    console.error("Image URL is missing. Please upload an image.");
+    return;}
     try {
       await addDoc(collection(db, "items"), {
         ...item,
@@ -88,6 +88,28 @@ const MyProducts = () => {
     }
   };
 
+   const markAsDone = async (id) => {
+    try {
+      // Get the item to be marked as done
+      const itemToMove = items.find((item) => item.id === id);
+      if (!itemToMove) return;
+
+      // Delete the item from the 'items' collection
+      await deleteDoc(doc(db, "items", id));
+
+      // Add the item to the 'history' collection with an updated timestamp
+      await addDoc(collection(db, "history"), {
+        ...itemToMove,
+        historyTimestamp: new Date().toISOString(), // Add timestamp for history tracking
+      });
+
+      // Remove the item from the local state immediately
+      setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    } catch (e) {
+      console.error("Failed to mark item as done:", e);
+    }
+  };
+  // Handle image upload
   // Handle image upload
   const handleImageInput = async (event) => {
     const file = event.target.files[0];
@@ -128,8 +150,8 @@ const MyProducts = () => {
       const sourceLang = detectLanguage(text);
       console.log(`Attempting to translate "${text}" from ${sourceLang} to ${targetLang}`);
       const response = await fetch(
-        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.trim())}&langpair=${sourceLang}|${targetLang}`
-      );
+        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.trim())}&langpair=${sourceLang}|${targetLang}
+      `);
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data = await response.json();
       const translated = data.responseData?.translatedText || text;
@@ -176,6 +198,7 @@ const MyProducts = () => {
       cancelButton: "Cancel",
       imageLabel: "Image",
       none: "None",
+      markAsDone: "Mark as Done",
     },
     hi: {
       title: "मेरी लिस्टिंग",
@@ -191,85 +214,44 @@ const MyProducts = () => {
       cancelButton: "रद्द करें",
       imageLabel: "छवि",
       none: "कोई नहीं",
+      markAsDone: "पूर्ण करें",
     },
   };
+      
 
   return (
-    <div className="p-4 relative min-h-screen">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">{text[language].title}</h1>
+    <div className="listing parent">
+      <div className="listing-container">
+        <h1 className="title">{text[language].title}</h1>
         <button
           onClick={toggleLanguage}
-          className="mb-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+          className="language"
         >
           {language === "en" ? "हिन्दी" : "English"}
         </button>
       </div>
 
-      {/* Items List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {items.map((item) => (
-          <div key={item.id} className="border rounded shadow p-4 relative">
-            <img
-              src={item.imageURL}
-              alt="Item"
-              className="w-full h-32 object-cover rounded"
-              style={{
-                maxWidth: "100%",
-                maxHeight: "150px", // Restricts the height
-                objectFit: "cover", // Ensures the image is cropped nicely within the bounds
-              }}
-            />
-            <h2 className="font-semibold mt-2">
-              {text[language].location}: {translatedItems[item.id]?.location || item.location || "N/A"}
-            </h2>
-            <p>
-              {text[language].pickupDate}: {new Date(item.pickupDate).toLocaleString()}
-            </p>
-            <p>
-              {text[language].price}: ${item.price || "N/A"}
-            </p>
-            <p>
-              {text[language].wasteType}: {translatedItems[item.id]?.wasteType || item.wasteType || "N/A"}
-            </p>
-            <p>
-              {text[language].subtype}: {translatedItems[item.id]?.subtype || item.subtype || "N/A"}
-            </p>
-            <p>
-              {text[language].status}: {item.status ? "Active" : "Inactive"}
-            </p>
-            <p>
-              {text[language].collected}: {item.hasCollected ? "Yes" : "No"}
-            </p>
-            <button
-              onClick={() => deleteItem(item.id)}
-              className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-            >
-              ✕
-            </button>
-          </div>
-        ))}
-      </div>
-
+      {/* Active Items List */}
+     
       {/* Floating Plus Button */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="fixed bottom-8 right-8 bg-blue-500 text-white p-8 text-xl rounded-full shadow-lg hover:bg-blue-600"
+        className="add-modal"
       >
         +
       </button>
 
       {/* Modal for Adding Item */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
-            <h2 className="text-xl font-bold mb-4">{text[language].addListing}</h2>
+        <div className="listing-modal">
+          <div className="listing-modal-container">
+            <h2 className="listing-modal-title">{text[language].addListing}</h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 addItem();
               }}
-              className="space-y-4"
+              className="listing-modal-form"
             >
               <div>
                 <label className="block text-sm font-medium">{text[language].location}</label>
@@ -360,13 +342,13 @@ const MyProducts = () => {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="bg-gray-300 text-gray-800 px-4 py-2 rounded"
+                  className="cancel"
                 >
                   {text[language].cancelButton}
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  className="add"
                 >
                   {text[language].addButton}
                 </button>
@@ -375,6 +357,58 @@ const MyProducts = () => {
           </div>
         </div>
       )}
+
+       <div className="list-item-list">
+        {items
+          .filter((item) => !item.hasCollected) // Show only active (not collected) items
+          .map((item) => (
+            <div key={item.id} className="list-item">
+              <img
+                src={item.imageURL}
+                alt="Item"
+                className="list-image"
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "150px", // Restricts the height
+                  objectFit: "cover", // Ensures the image is cropped nicely within the bounds
+                }}
+              />
+              <p className="list-location">
+                {text[language].location}: {translatedItems[item.id]?.location || item.location || "N/A"}
+              </p>
+              <p className="list-location" >
+                {text[language].pickupDate}: {new Date(item.pickupDate).toLocaleString()}
+              </p  >
+              <p className="list-location">
+                {text[language].price}: ${item.price || "N/A"}
+              </p>
+              <p className="list-location">
+                {text[language].wasteType}: {translatedItems[item.id]?.wasteType || item.wasteType || "N/A"}
+              </p>
+              <p>
+                {text[language].subtype}: {translatedItems[item.id]?.subtype || item.subtype || "N/A"}
+              </p>
+              <p className="list-location">
+                {text[language].status}: {item.status ? "Active" : "Inactive"}
+              </p>
+              <div className="list-location">
+                <button
+                  onClick={() => deleteItem(item.id)}
+                  className="cancel"
+                >
+                  ✕
+                </button>
+                <button
+                  onClick={() => markAsDone(item.id)}
+                  className="markasdone"
+                >
+                  {text[language].markAsDone}
+                </button>
+              </div>
+            </div>
+          ))}
+      </div>
+
     </div>
   );
 };

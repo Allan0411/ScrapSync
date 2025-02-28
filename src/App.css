@@ -14,12 +14,15 @@ body {
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
   overflow-x: hidden;
   background-color: #fff;
 }
-
+.home {
+  margin-right: 2rem;
+  margin-left: 1rem;
+}
 .signup-page,
 .signin-page {
   /* background-image: url("./assets/images/backgroundimg1.svg");
@@ -117,8 +120,8 @@ ul {
   border: 1px solid black;
 }
 .signup-page button:hover,
-.signin-page button:hover{
-    color: black;
+.signin-page button:hover {
+  color: black;
   background-color: white;
   border: 1px solid black;
 }
@@ -142,16 +145,14 @@ ul {
   background-color: #fff;
 }
 
-
 .navbar ul a.active {
- color: black;
- background-color: black;
+  color: black;
+  background-color: black;
 }
 
 /* Fade transition */
 .fade-enter {
   opacity: 0;
-
 }
 
 .fade-enter-active {
@@ -168,13 +169,13 @@ ul {
   transition: opacity 300ms ease-in-out;
 }
 
-.skeleton{
+.skeleton {
   display: flex;
   width: 100vw;
   height: 100vh;
 }
 
-.skeleton-div{
+.skeleton-div {
   color: aqua;
   width: 90vw;
   height: 10vh;
@@ -184,12 +185,12 @@ ul {
   font-weight: bold;
   border-bottom: 2px solid black;
 }
-.bi-fire{
-color: red;
-font-size: 2rem;
+.bi-fire {
+  color: red;
+  font-size: 2rem;
 }
 
-.dashboard{
+.dashboard {
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -197,42 +198,42 @@ font-size: 2rem;
   gap: 2rem;
 }
 
-
 /* .home{
   background-color: white;
 } */
-.friends-external{
+.friends-external {
   display: flex;
   justify-content: space-between;
 }
-.friends-container{
+.friends-container {
   margin-top: 1rem;
   margin-left: 5rem;
 }
 
-.friend-img{
+.friend-img {
   margin-right: 20rem;
   margin-top: 2rem;
   width: 450px;
   height: 450px;
 }
-.menu-container{
+.menu-container {
   margin-bottom: 0.2rem;
 }
 
-.no-friend{
+.no-friend {
   margin-bottom: 2rem;
 }
 
-.friends-list{
+.friends-list {
   margin-top: 2.2rem;
 }
 
-.add-friend{
+.add-friend {
   margin-top: 1rem;
 }
 /* SCRAP */
-.grid-home {
+.grid-home,
+.list-item-list {
   margin: 1rem;
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* Ensures 3 elements per row */
@@ -260,7 +261,7 @@ font-size: 2rem;
   border-radius: 1rem;
 }
 
-.modal{
+.modal {
   flex-direction: column;
   display: flex;
   position: fixed;
@@ -278,9 +279,9 @@ font-size: 2rem;
   z-index: 10000;
 }
 
-.modal-button{
+.modal-button {
   align-self: flex-end;
-   background-color: black;
+  background-color: black;
   color: white;
   outline: none;
   border: none;
@@ -289,88 +290,210 @@ font-size: 2rem;
   margin-right: 2rem;
 }
 
-.buy-button{
-   background-color: black;
+.buy-button {
+  background-color: black;
   color: white;
   outline: none;
   border: none;
   height: 6vh;
-  width:  7rem;
+  width: 7rem;
   margin-right: 2rem;
   margin-bottom: 2rem;
 }
-.modal-image{
+.modal-image {
   /* height: 60%;
 width: 60%; */
   height: 400px;
   width: 400px;
 }
-.modal image{
- object-fit: contain; 
+.modal image {
+  object-fit: contain;
 }
 
-.modal .text{
-  
+.modal .text {
   width: 90%;
   display: flex;
-  justify-content:space-between;
+  justify-content: space-between;
 }
 
-.listing-product-button{
-margin: 2rem;
-   background-color: black;
+.listing-product-button {
+  margin: 2rem;
+  background-color: black;
   color: white;
   outline: none;
   border: none;
   height: 3rem;
-  width:  3rem;
+  width: 3rem;
   border-radius: 7rem;
 }
 
-.listing-modal{
+.listing-modal {
   gap: 1rem;
   margin-left: 1.5rem;
-   margin-right: 1.5rem;
+  margin-right: 1.5rem;
 }
 
-.listing-form{
+.listing-form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.listing-heading{
+.listing-heading {
   margin-bottom: 1rem;
 }
 
-.waste{
+.waste {
   margin-top: 5px;
 }
 
-.waste-label{
+.waste-label {
   margin-right: 1rem;
 }
 
-.waste-subtype-label{
+.waste-subtype-label {
   margin-right: 1rem;
 }
 
-.listing-image{
+.listing-image {
   margin-top: 0.5;
-    margin-bottom: 0.5;
+  margin-bottom: 0.5;
 }
 
-.listing-modal-button{
+.listing-modal-button {
   margin: 2rem;
 }
 
-.cancel-button, .add-button{
-   background-color: black;
+.cancel-button,
+.add-button {
+  background-color: black;
   color: white;
   outline: none;
   border: none;
   height: 6vh;
-  width:  7rem;
+  width: 7rem;
   margin-right: 2rem;
   margin-bottom: 2rem;
+}
+
+.listing-modal-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.listing-modal-title {
+  margin-left: 2rem;
+}
+
+.listing-modal-form {
+  display: flex;
+  flex-direction: column;
+  margin-left: 2rem;
+  gap: 1.5rem;
+  margin-right: 1rem;
+}
+
+.listing-modal-container label {
+  margin-bottom: 4px;
+}
+
+.cancel {
+  background-color: black;
+  color: white;
+  outline: none;
+  border: none;
+  height: 6vh;
+  width: 7rem;
+  margin-right: 2rem;
+  margin-bottom: 2rem;
+}
+
+.markasdone {
+  background-color: black;
+  color: white;
+  outline: none;
+  border: none;
+  height: 6vh;
+  width: 7rem;
+  margin-right: 2rem;
+  margin-bottom: 2rem;
+  margin-left: 2rem;
+}
+
+.list-location {
+  margin-bottom: 0.4rem;
+}
+
+.list-img {
+  margin-bottom: 0.5rem;
+}
+.language {
+  background-color: black;
+  color: white;
+  outline: none;
+  border: none;
+  height: 3rem;
+  width: 3rem;
+  margin-left: 3rem;
+  margin-bottom: 2rem;
+  border-radius: 3rem;
+}
+
+.title {
+  margin-top: 1rem;
+}
+
+.add {
+  background-color: black;
+  color: white;
+  outline: none;
+  border: none;
+  height: 6vh;
+  width: 7rem;
+  margin-right: 2rem;
+  margin-bottom: 2rem;
+}
+
+.add-modal {
+  background-color: black;
+  color: white;
+  outline: none;
+  border: none;
+  height: 3rem;
+  width: 3rem;
+  margin-left: 3rem;
+  margin-bottom: 2rem;
+  border-radius: 3rem;
+}
+
+/* .list-item-list{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 2rem;
+  gap: 2rem;
+  align-content: center;
+} */
+
+.list-item,
+.history-list-item {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  padding: 1rem;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.262);
+}
+
+.history-list {
+  margin: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Ensures 3 elements per row */
+  gap: 2rem; /* Adjust spacing between elements */
+  padding-bottom: 3rem;
+}
+
+.search-bar {
+  margin-left: 1rem;
+  padding-left: 1rem;
 }
