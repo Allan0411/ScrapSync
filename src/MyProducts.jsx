@@ -120,8 +120,8 @@ const MyProducts = () => {
               className="w-full h-32 object-cover rounded"
               style={{
                 maxWidth: "100%",
-                maxHeight: "150px", // Restricts the height
-                objectFit: "cover", // Ensures the image is cropped nicely within the bounds
+                maxHeight: "150px", 
+                objectFit: "cover", 
               }}
             />
             <h2 className="font-semibold mt-2">Location: {item.location}</h2>
@@ -144,61 +144,61 @@ const MyProducts = () => {
       {/* Floating Plus Button */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="fixed bottom-8 right-8 bg-blue-500 text-white p-8 text-xl rounded-full shadow-lg hover:bg-blue-600"
+        className="listing-product-button"
       >
         +
       </button>
 
       {/* Modal for Adding Item */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
-            <h2 className="text-xl font-bold mb-4">Add Listing</h2>
+        <div className="listing-modal">
+          <div className="listing-container">
+            <h2 className="listing-heading">Add Listing</h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 addItem();
               }}
-              className="space-y-4"
+              className="listing-form"
             >
-              <div>
-                <label className="block text-sm font-medium">Location</label>
+              <div className='location'>
+                <label className="location-label">Location</label>
                 <input
                   type="text"
                   value={item.location}
                   onChange={(e) =>
                     setItem((prev) => ({ ...prev, location: e.target.value }))
                   }
-                  className="border rounded p-2 w-full"
+                  className="date-input"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium">Pickup Date</label>
+              <div className='date'>
+                <label className="date-label">Pickup Date</label>
                 <input
                   type="datetime-local"
                   value={item.pickupDate}
                   onChange={(e) =>
                     setItem((prev) => ({ ...prev, pickupDate: e.target.value }))
                   }
-                  className="border rounded p-2 w-full"
+                  className="date-input"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium">Price</label>
+              <div className='price'>
+                <label className="price-label">Price</label>
                 <input
                   type="number"
                   value={item.price}
                   onChange={(e) =>
                     setItem((prev) => ({ ...prev, price: e.target.value }))
                   }
-                  className="border rounded p-2 w-full"
+                  className="price-input"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium">Waste Type</label>
+              <div className='waste'>
+                <label className="waste-label">Waste Type</label>
                 <select
                   value={item.wasteType}
                   onChange={(e) =>
@@ -208,7 +208,7 @@ const MyProducts = () => {
                       subtype: "",
                     }))
                   }
-                  className="border rounded p-2 w-full"
+                  className="waste-input"
                   required
                 >
                   {Object.keys(wasteOptions).map((type) => (
@@ -218,14 +218,14 @@ const MyProducts = () => {
                   ))}
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium">Subtype</label>
+              <div className='waste-subtype'>
+                <label className="waste-subtype-label">Subtype</label>
                 <select
                   value={item.subtype}
                   onChange={(e) =>
                     setItem((prev) => ({ ...prev, subtype: e.target.value }))
                   }
-                  className="border rounded p-2 w-full"
+                  className="waste-subtype-input"
                   disabled={!wasteOptions[item.wasteType].length}
                 >
                   <option value="">None</option>
@@ -236,25 +236,25 @@ const MyProducts = () => {
                   ))}
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium">Image</label>
+              <div className='listing-image'>
+                <label className="image-label">Image</label>
                 <input
                   type="file"
                   onChange={handleImageInput}
-                  className="border rounded p-2 w-full"
+                  className="image-input"
                 />
               </div>
-              <div className="flex justify-end space-x-4">
+              <div className="listing-modal-button">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="bg-gray-300 text-gray-800 px-4 py-2 rounded"
+                  className="cancel-button"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  className="add-button"
                 >
                   Add
                 </button>

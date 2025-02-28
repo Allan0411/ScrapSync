@@ -11,7 +11,6 @@ import React from 'react'
 import { getUser } from "./getUser";
 export const AuthContext = createContext(null);
 import Chat from './Chat';
-import { generateToken } from './firebase';
 import { onMessage } from 'firebase/messaging'; 
 import { messaging } from './firebase';
 import { ToastContainer } from 'react-toastify';
@@ -21,12 +20,6 @@ import Hand from "./hand.jsx";
 import MyProducts from "./MyProducts.jsx";
 
 function Layout() {
-  useEffect(() => {
-    generateToken();
-    onMessage(messaging, (payload) => {
-      console.log(payload);
-    });
-  }, []);
 
   const [user, setUser] = useState(null);
   const [data, setData] = useState(null);
