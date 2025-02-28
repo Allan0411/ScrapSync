@@ -63,30 +63,23 @@ const HomePage = () => {
     <div className="p-4 relative min-h-screen">
       <h1 className="text-2xl font-bold mb-4">My Items</h1>
 
-      {/* Items List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {items.map((item) => (
-          <div key={item.id} className="border rounded shadow p-4">
-            <img
-              src={item.imageURL}
-              alt="Item"
-              className="w-full h-32 object-cover rounded"
-              style={{
-                maxWidth: "100%",
-                maxHeight: "150px", // Restricts the height
-                objectFit: "cover", // Ensures the image is cropped nicely within the bounds
-              }}
-            />
-            <h2 className="font-semibold mt-2">Location: {item.location}</h2>
-            <p>Pickup Date: {new Date(item.pickupDate).toLocaleString()}</p>
-            <p>Price: ${item.price}</p>
-            <p>Waste Type: {item.wasteType}</p>
-            <p>Subtype: {item.subtype}</p>
-            <p>Status: {item.status ? "Active" : "Inactive"}</p>
-            <p>Collected: {item.hasCollected ? "Yes" : "No"}</p>
-          </div>
-        ))}
-      </div>
+      {/* It */}
+  <div className="grid-home">
+  {items.map((item) => (
+    <div key={item.id} className="grid-element">
+      <img src={item.imageURL} alt="Item" className="image" />
+      <h2 className="font-semibold mt-2">Location: {item.location}</h2>
+      <p>Pickup Date: {new Date(item.pickupDate).toLocaleString()}</p>
+      <p>Price: ${item.price}</p>
+      <p>Waste Type: {item.wasteType}</p>
+      <p>Subtype: {item.subtype}</p>
+      <p>Status: {item.status ? "Active" : "Inactive"}</p>
+      <p>Collected: {item.hasCollected ? "Yes" : "No"}</p>
+    </div>
+  ))}
+</div>
+
+
 
       {/* Floating Plus Button */}
       
