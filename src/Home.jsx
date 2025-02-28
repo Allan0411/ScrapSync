@@ -58,7 +58,7 @@ const HomePage = () => {
           <div className="modal-image">
                     <img src={selectedItem.imageURL} alt="Item" className="image" />
           </div>
-          <button className="buy-button">Chat</button>
+          <button className="buy-button">Chat With</button>
           <div className="text">
            <p>Location: {selectedItem.location} </p>
             <p>Pickup Date: {new Date(selectedItem.pickupDate).toLocaleString()}</p>
