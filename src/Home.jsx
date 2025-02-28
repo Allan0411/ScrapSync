@@ -8,234 +8,99 @@ import { div } from 'motion/react-client';
 
 const HomePage = () => {
 
-  const [habits, setHabits] = useState([]);
-  const [newHabit, setNewHabit] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+ 
   const { user, setUser, data, setData } = useContext(AuthContext);
   const [isloading, setisloading] = useState(false);
-      const profileCollection = collection(db, "Profile");
+      
  
     console.log(data);
-useEffect(() => {
-  const fetchHabits = async () => {
-    try {
-      setisloading(true);
-      if (!data?.id) return; 
+    const [item, setItem] = useState({
+      email: user?.email || "",
+      location: "",
+      pickupDate: "",
+      price: "",
+      imageURL: "",
+      wasteType: "Plastic",
+      subtype: "",
+      status: true,
+      hasCollected: false,
+    });
+    const [items, setItems] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+  
+    const wasteOptions = {
+      Plastic: ["Thermoplastic", "Thermosetting Plastic", "Other"],
+      Metal: ["Ferrous", "Non-Ferrous", "Alloys"],
+      "E-Waste": ["Batteries", "Circuit Boards", "Other"],
+    };
+  
+    // Fetch items from Firebase
+    const fetchItems = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "items"));
+        const itemsList = querySnapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+          .filter((item) => item.email === user?.email); // Filter by user email
+        setItems(itemsList);
+      } catch (e) {
+        console.error("Failed to fetch items:", e);
+      }
+    };
+  
+    useEffect(() => {
+      fetchItems();
+    }, []);
+  
 
-      const q = query(collection(db, 'habits'), where("creator", "==", data.id));
-      const habitsCollection = await getDocs(q);
-
-      setHabits(habitsCollection.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    } catch (error) {
-      console.error("Error fetching habits:", error);
-    }
-    finally {
-      setisloading(false);
-    }
-  };
-
-  fetchHabits();
-}, [data?.id]);
-
-  const addHabit = async () => {
-    const docRef = await addDoc(collection(db, 'habits'), { name: newHabit, streak: 0, lastCompletedDate: null,creator:data.id });
-    setHabits([...habits, { id: docRef.id, name: newHabit, streak: 0, lastCompletedDate: null,creator:data.id }]);
-    setNewHabit("");
-    setIsModalOpen(false); 
-    const currentUser = doc(db, "Profile", data.id);
-await updateDoc(currentUser, { [newHabit]: new Array(12).fill(0) });
-
-
-  };
-
-  const deleteHabit = async (id, hname) => {
-    console.log(hname);
-    await deleteDoc(doc(db, 'habits', id));
-    setHabits(habits.filter(habit => habit.id !== id));
-    const currentUser = doc(db, "Profile", data.id);
-      await updateDoc(currentUser, {[hname]: deleteField() 
-  });
-  };
-
-  const markDone = async (habit) => {
-    const today = new Date().toISOString().split('T')[0];
-    const updatedStreak = habit.lastCompletedDate === today ? habit.streak : habit.streak + 1;
-  if (updatedStreak > habit.streak) {
-  const newPoints = (data.Points || 0) + 1; 
-  const currentUser = doc(db, "Profile", data.id);
-
-  await updateDoc(currentUser, { Points: newPoints }); 
-  await updateDoc(currentUser, { [habit.name]: today });
-
-  setData({ ...data, Points: newPoints }); 
-  console.log("Updated Points:", newPoints);
-}
-
-    await updateDoc(doc(db, 'habits', habit.id), { streak: updatedStreak, lastCompletedDate: today });
-    setHabits(habits.map(h => h.id === habit.id ? { ...h, streak: updatedStreak, lastCompletedDate: today } : h));
-  };
+  
+    // Handle image upload
+  
 
   return (
-    <motion.div
-      style={{backgroundColor:"#fff"}}
-    initial={{opacity: 0 }} 
-      animate={{ opacity: 1 }} className='home' >
-    <div style={{ padding: '20px', position: 'relative', minHeight: '100vh' }}>
-      <h1>Habit Tracker</h1>
-       
-      <div>
-            {habits.map((habit, i) => (
-         <motion.div
-  key={habit.id}
-style={{
-  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.08)", 
-  margin: "1rem",
-  marginBottom:"3rem",
-  padding: "10px",
-  borderRadius: "1rem",
-  background: "#f7f8fa"
-}}
+    <div className="p-4 relative min-h-screen">
+      <h1 className="text-2xl font-bold mb-4">My Items</h1>
 
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: i * 0.2 }}
-       whileHover={{ scale: 1.04, transition: { duration: 0.2 } }} 
->
-  <div
-    style={{
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "stretch",
-      gap: "10px",
-      width: "100%",
-    }}
-  >
-    <h2 style={{ flexGrow: 1 }}>{habit.name}</h2>
-    <p>Streak: {habit.streak}</p>
-    
-    <div style={{ width: "20px", textAlign: "center", marginRight:"4px"}}>
-      {habit.streak > 0 && <i className="bi bi-fire" style={{ color: "red" }}></i>}
-    </div>
-  </div>
-
-  <div style={{ display: "flex" }}>
-    <motion.button  whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} onClick={() => markDone(habit)}>Mark as Done</motion.button>
-    <motion.button  whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} onClick={() => deleteHabit(habit.id, habit.name)}>Delete</motion.button>
-  </div>
-</motion.div>
-
+      {/* Items List */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {items.map((item) => (
+          <div key={item.id} className="border rounded shadow p-4">
+            <img
+              src={item.imageURL}
+              alt="Item"
+              className="w-full h-32 object-cover rounded"
+              style={{
+                maxWidth: "100%",
+                maxHeight: "150px", // Restricts the height
+                objectFit: "cover", // Ensures the image is cropped nicely within the bounds
+              }}
+            />
+            <h2 className="font-semibold mt-2">Location: {item.location}</h2>
+            <p>Pickup Date: {new Date(item.pickupDate).toLocaleString()}</p>
+            <p>Price: ${item.price}</p>
+            <p>Waste Type: {item.wasteType}</p>
+            <p>Subtype: {item.subtype}</p>
+            <p>Status: {item.status ? "Active" : "Inactive"}</p>
+            <p>Collected: {item.hasCollected ? "Yes" : "No"}</p>
+          </div>
         ))}
       </div>
 
+      {/* Floating Plus Button */}
+      
 
-        <motion.button
-           whileTap={{ scale: 0.7 }} whileHover={{ scale: 1.05 }}
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          backgroundColor: '#4c5fd5',
-          color: 'white',
-          border: 'none',
-          borderRadius: '50%',
-          width: '60px',
-          height: '60px',
-          fontSize: '24px',
-          cursor: 'pointer',
-        }}
-        onClick={() => setIsModalOpen(true)}
-      >
-        +
-      </motion.button>
-
-    
-        {isModalOpen && (
-          <AnimatePresence>
-          <motion.div
-                     initial={{ opacity: 0 }} 
-            animate={{ opacity: 1, transition: 2 }}
-              exit={{ opacity: 0, transition: 2 }}
-              
-
-          style={{
-            position: 'fixed',
-            top: '0',
-            left: '0',
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: 'white',
-              padding: '20px',
-              borderRadius: '8px',
-              width: '300px',
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                height: "200px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "stretch",
-             
-                
-            }}
-          >
-              <div style={{ width: "100%", justifyItems: "center", alignItems: "center", marginBottom:"8px" }}>
-                <h2>Add New Habit</h2></div>
-            <input
-                type="text"
-                  maxLength={90}
-              value={newHabit}
-              onChange={(e) => setNewHabit(e.target.value)}
-              placeholder="Enter habit name"
-              style={{
-                width: '100%',
-                padding: '10px',
-                marginBottom: '10px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                
-              }}
-            />
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <motion.button
-          whileTap={{ scale: 0.7 }} whileHover={{ scale: 1.05 }}
-                onClick={() => setIsModalOpen(false)}
-                style={{
-                  padding: '10px 20px',
-                  border: 'none',
-                  backgroundColor: '#ccc',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </motion.button>
-                <motion.button
-                    whileTap={{ scale: 0.7 }} whileHover={{ scale: 1.05 }}
-                onClick={addHabit}
-                style={{
-                  padding: '10px 20px',
-                  border: 'none',
-                  backgroundColor: '#6200ea',
-                  color: 'white',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                }}
-              >
-                Add
-              </motion.button>
-            </div>
+      {/* Modal for Adding Item */}
+      { (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded shadow-lg w-96">
+            
+          
           </div>
-            </motion.div>
-            </AnimatePresence>
+        </div>
       )}
-      </div>
-      </motion.div>
+    </div>
   );
 };
 

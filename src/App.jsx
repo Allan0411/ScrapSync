@@ -2,7 +2,7 @@ import "./App.css";
 import Signup from "./Authentication/Signup";
 import Signin from "./Authentication/Signin";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import Home from "./home";
+import Home from "./Home";
 import Navbar from "./Navbar";
 import Profile from "./Profile";
 import { useState,useEffect } from "react";
@@ -21,6 +21,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Hand from "./hand.jsx";
+import MyProducts from "./MyProducts.jsx";
 
 function Layout() {
   useEffect(() => {
@@ -69,6 +70,9 @@ function Layout() {
         <Route path="/chat/:roomName" element={user ? <Chat /> : <Navigate to="/Signin" />} />
         <Route path="/Dashboard" element={user ? <Dashboard /> : <Navigate to="/Signin" />} />
         <Route path="/Friends" element={user ? <Friends /> : <Navigate to="/Signin" />} />
+        <Route path="/MyProducts" element={user ? <MyProducts /> : <Navigate to="/Signin" />} />
+
+        
       </Routes>
     </AuthContext.Provider>
   );

@@ -7,16 +7,15 @@ import "firebase/storage"
 import { getMessaging, getToken } from "firebase/messaging";
 import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, where,query, deleteField, Timestamp, arrayUnion  } from 'firebase/firestore';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA-KtLEry-IKfArDy2fFGlO4Plce9B5gec",
-  authDomain: "elevate-together.firebaseapp.com",
-  projectId: "elevate-together",
-  storageBucket: "elevate-together.firebasestorage.app",
-  messagingSenderId: "526113036967",
-  appId: "1:526113036967:web:d6bc85759442527bde5982",
-  measurementId: "G-ZJ8VN19HC4"
-};
 
+const firebaseConfig = {
+  apiKey: "AIzaSyDoua-9rqGU-YkZGPfzSWYOPc6FsLEVDlA",
+  authDomain: "scrapsync-cad51.firebaseapp.com",
+  projectId: "scrapsync-cad51",
+  storageBucket: "scrapsync-cad51.firebasestorage.app",
+  messagingSenderId: "36105185189",
+  appId: "1:36105185189:web:5db364151f4f795e89ea4c"
+};
 
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);

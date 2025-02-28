@@ -6,10 +6,7 @@ export default function Navbar() {
     <nav className="navigation">
       <ul>
         <li>
-          <NavLink
-            to="/Home"
-            className={({ isActive }) => (isActive ? "nv active" : "nv")}
-          >
+          <NavLink to="/Home" className={({ isActive }) => (isActive ? "nv active" : "nv")}>
             Home
           </NavLink>
         </li>
@@ -19,6 +16,14 @@ export default function Navbar() {
             className={({ isActive }) => (isActive ? "nv active" : "nv")}
           >
             Community
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/MyProducts"
+            className={({ isActive }) => (isActive ? "nv active" : "nv")}
+          >
+            My Products
           </NavLink>
         </li>
         <li>
