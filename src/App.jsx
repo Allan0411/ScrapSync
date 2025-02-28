@@ -12,8 +12,7 @@ import { getUser } from "./getUser";
 export const AuthContext = createContext(null);
 import Chat from './Chat';
 import History from './History';
-import { onMessage } from 'firebase/messaging'; 
-import { messaging } from './firebase';
+
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -60,6 +59,8 @@ function Layout() {
         <Route path="/Home" element={user ? <Home /> : <Navigate to="/Signin" />} />
         <Route path="/Profile" element={user ? <Profile /> : <Navigate to="/Signin" />} />
         <Route path="/chat/:chatId" element={user ? <Chat /> : <Navigate to="/Signin" />} />
+        <Route path="/ChatInbox" element={user ? <ChatInbox /> : <Navigate to="/Signin" />} />
+        <Route path="/Recycle" element={user ? <Recycle /> : <Navigate to="/Signin" />} />
         <Route path="/MyProducts" element={user ? <MyProducts /> : <Navigate to="/Signin" />} />
         <Route path="/History" element={user ? <History /> : <Navigate to="/Signin" />} />
         
