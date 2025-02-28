@@ -18,6 +18,15 @@ export default function Navbar() {
             My Products
           </NavLink>
         </li>
+        
+        <li>
+          <NavLink
+            to="/History"
+            className={({ isActive }) => (isActive ? "nv active" : "nv")}
+          >
+           History 
+          </NavLink>
+        </li>
         <li>
           <NavLink
             to="/ChatInbox"
