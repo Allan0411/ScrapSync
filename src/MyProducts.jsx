@@ -52,6 +52,10 @@ const MyProducts = () => {
 
   // Add a new item
   const addItem = async () => {
+    if (!item.imageURL) {
+        console.error("Image URL is missing. Please upload an image.");
+        return;
+    }
     try {
       await addDoc(collection(db, "items"), {
         ...item,

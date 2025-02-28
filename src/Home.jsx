@@ -11,8 +11,9 @@ const HomePage = () => {
 
   const addIndexDocument=async(userArray)=>{
     try{
-      await addDoc(collection(db,"Inbox"),{users:userArray});
+      const docRef=await addDoc(collection(db,"Inbox"),{users:userArray});
       console.log("Document successfully written!");
+      return docRef;
     }
     catch(error){
       console.error("Error adding document:",error);
@@ -60,11 +61,24 @@ const HomePage = () => {
         }
         console.log(userArray);
         
-        addIndexDocument(userArray);
-
+        const inboxQuery=query(collection(db,"Inbox"),where("users","==",userArray));
+        let inbox= await getDocs(inboxQuery);
+        
+        if(inbox.empty){
+        const newdocRef=addIndexDocument(userArray);
+        console.log(newdocRef.id);
+        redirectToChat(newdocRef.id);
+        }
+        else{
+          console.log("Document already exists");
+          redirectToChat(inbox.docs[0].id);
+        }
        
  };
 
+const redirectToChat = (chatId) => {
+  window.location.href = `/chat/${chatId}`; // Adjust the route as needed
+};
   return (
     <div className="home-container">
       <h1 className="text-2xl font-bold mb-4">Scrap Market</h1>
