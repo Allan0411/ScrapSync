@@ -9,6 +9,7 @@ const HomePage = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [translatedItems, setTranslatedItems] = useState({});
   const [language, setLanguage] = useState("en");
+  const [searchTerm, setSearchTerm] = useState(""); // Added for search
 
   const fetchItems = async () => {
     try {
@@ -57,13 +58,15 @@ const HomePage = () => {
     }
   };
 
-  // Translate all items based on current language
+  // Translate all items based on current language, ensuring correct direction
   const translateAllItems = async (itemsToTranslate) => {
     const translations = {};
     for (const item of itemsToTranslate) {
+      const locationLang = detectLanguage(item.location);
+      const wasteTypeLang = detectLanguage(item.wasteType);
       translations[item.id] = {
-        location: await translateText(item.location || "N/A", language),
-        wasteType: await translateText(item.wasteType || "N/A", language),
+        location: locationLang !== language ? await translateText(item.location || "N/A", language) : item.location || "N/A",
+        wasteType: wasteTypeLang !== language ? await translateText(item.wasteType || "N/A", language) : item.wasteType || "N/A",
       };
     }
     setTranslatedItems(translations);
@@ -81,14 +84,27 @@ const HomePage = () => {
       pickupDate: "Pickup Date",
       price: "Price",
       wasteType: "Waste Type",
+      searchPlaceholder: "Search by waste type...",
+      noItems: "No items available",
     },
     hi: {
       location: "स्थान",
       pickupDate: "पिकअप तिथि",
       price: "मूल्य",
       wasteType: "कचरा प्रकार",
+      searchPlaceholder: "कचरा प्रकार से खोजें...",
+      noItems: "कोई आइटम उपलब्ध नहीं",
     },
   };
+
+  // Filter items based on search term (wasteType), with debugging
+  const filteredItems = items.filter((item) => {
+    const wasteType = item.wasteType || "";
+    const term = searchTerm.trim().toLowerCase();
+    const matches = wasteType.toLowerCase().includes(term);
+    console.log(`Filtering: Waste Type "${wasteType}" vs Search Term "${term}" = ${matches}`);
+    return matches;
+  });
 
   return (
     <div className="p-4 relative min-h-screen">
@@ -102,12 +118,22 @@ const HomePage = () => {
         </button>
       </div>
 
+      {/* Search Bar */}
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder={text[language].searchPlaceholder}
+        className="border rounded p-2 w-full mb-4"
+        style={{ fontFamily: "inherit" }} // Support Hindi input
+      />
+
       {/* Grid Items */}
       <div className="grid-home">
-        {items.length === 0 ? (
-          <p>No items available</p>
+        {filteredItems.length === 0 ? (
+          <p>{text[language].noItems}</p>
         ) : (
-          items.map((item) => (
+          filteredItems.map((item) => (
             <div
               key={item.id}
               className="grid-element cursor-pointer"
