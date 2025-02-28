@@ -43,7 +43,7 @@ const HomePage = () => {
             id: doc.id,
             ...doc.data(),
           }))
-          .filter((item) => item.email === user?.email); // Filter by user email
+          
         setItems(itemsList);
       } catch (e) {
         console.error("Failed to fetch items:", e);
