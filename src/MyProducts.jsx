@@ -56,11 +56,6 @@ const MyProducts = () => {
   
     // Add a new item
     const addItem = async () => {
-      if (!item.location || !item.imageURL || !item.pickupDate || !item.price || !item.subtype) {
-        alert("Please fill out all the fields.");
-        return;
-      }
-  
       try {
         await addDoc(collection(db, "items"), {
           ...item,

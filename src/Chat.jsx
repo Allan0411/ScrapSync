@@ -5,7 +5,6 @@ import { collection, query, orderBy, onSnapshot, getDoc, doc, where, updateDoc, 
 import "./Chat.css";
 import { AuthContext } from "./App";
 import { motion } from "motion/react";
-
 import completedTask from "/src/assets/completedTask.png";
 export default function Chat() {
     const { roomName } = useParams();  
