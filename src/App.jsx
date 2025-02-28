@@ -11,25 +11,14 @@ import React from 'react'
 import { getUser } from "./getUser";
 export const AuthContext = createContext(null);
 import Chat from './Chat';
-import Community from './Community';
-
-import Dashboard from "./Dashboard.jsx";
-import { generateToken } from './firebase';
-import { onMessage } from 'firebase/messaging'; 
-import { messaging } from './firebase';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Hand from "./hand.jsx";
 import MyProducts from "./MyProducts.jsx";
-
+import ChatInbox from "./ChatInbox.jsx";
+import Recycle from "./Recycle.jsx";
 function Layout() {
-  useEffect(() => {
-    generateToken();
-    onMessage(messaging, (payload) => {
-      console.log(payload);
-    });
-  }, []);
 
   const [user, setUser] = useState(null);
   const [data, setData] = useState(null);
@@ -66,12 +55,10 @@ function Layout() {
         <Route path="/Signup" element={user ? <Navigate to="/Home" /> : <Signup />} />
         <Route path="/Home" element={user ? <Home /> : <Navigate to="/Signin" />} />
         <Route path="/Profile" element={user ? <Profile /> : <Navigate to="/Signin" />} />
-        <Route path="/Community" element={user ? <Community /> : <Navigate to="/Signin" />} />
         <Route path="/chat/:roomName" element={user ? <Chat /> : <Navigate to="/Signin" />} />
-        <Route path="/Dashboard" element={user ? <Dashboard /> : <Navigate to="/Signin" />} />
-        
         <Route path="/MyProducts" element={user ? <MyProducts /> : <Navigate to="/Signin" />} />
-
+        <Route path="/ChatInbox" element={user ? <ChatInbox /> : <Navigate to="/Signin" />} />
+        <Route path="/Recycle" element={user ? <Recycle /> : <Navigate to="/Signin" />} />
         
       </Routes>
     </AuthContext.Provider>

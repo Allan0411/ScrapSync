@@ -12,14 +12,6 @@ export default function Navbar() {
         </li>
         <li>
           <NavLink
-            to="/Community"
-            className={({ isActive }) => (isActive ? "nv active" : "nv")}
-          >
-            Chat
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
             to="/MyProducts"
             className={({ isActive }) => (isActive ? "nv active" : "nv")}
           >
@@ -28,18 +20,26 @@ export default function Navbar() {
         </li>
         <li>
           <NavLink
-            to="/Profile"
+            to="/ChatInbox"
             className={({ isActive }) => (isActive ? "nv active" : "nv")}
           >
-            Profile
+            Inbox
           </NavLink>
         </li>
         <li>
           <NavLink
-            to="/Dashboard"
+            to="/Recycle"
             className={({ isActive }) => (isActive ? "nv active" : "nv")}
           >
-            Dashboard
+            Recycle
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/Profile"
+            className={({ isActive }) => (isActive ? "nv active" : "nv")}
+          >
+            Profile
           </NavLink>
         </li>
       </ul>

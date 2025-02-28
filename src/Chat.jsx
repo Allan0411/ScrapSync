@@ -5,7 +5,7 @@ import { collection, query, orderBy, onSnapshot, getDoc, doc, where, updateDoc, 
 import "./Chat.css";
 import { AuthContext } from "./App";
 import { motion } from "motion/react";
-import Trophy from "./Trophy";
+
 import completedTask from "/src/assets/completedTask.png";
 export default function Chat() {
     const { roomName } = useParams();  
@@ -171,9 +171,9 @@ export default function Chat() {
             ) : (
 <div className="leaderboard-container">
   <div className="leaderboard-col">
-    <div className="trophy">
+    <div className="">
       <h3>Leaderboard</h3> 
-      <Trophy />
+      
     </div>
     <ul className="leaderboard">
       {leaderboard.map((entry, index) => (
