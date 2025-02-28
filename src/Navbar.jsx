@@ -23,6 +23,14 @@ export default function Navbar() {
             to="/Recycle"
             className={({ isActive }) => (isActive ? "nv active" : "nv")}
           >
+            Inbox
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/Recycle"
+            className={({ isActive }) => (isActive ? "nv active" : "nv")}
+          >
             Recycle
           </NavLink>
         </li>
