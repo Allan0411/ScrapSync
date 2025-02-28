@@ -1,196 +1,109 @@
 import { useState, useEffect, useContext } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { db } from "./firebase";
-import { collection, query, orderBy, onSnapshot, getDoc, doc, where, updateDoc, arrayRemove, addDoc, serverTimestamp } from "firebase/firestore";
+import { getDocs, collection, query, orderBy, onSnapshot, getDoc, doc, where, addDoc, serverTimestamp } from "firebase/firestore";
 import "./Chat.css";
 import { AuthContext } from "./App";
 import { motion } from "motion/react";
 
-import completedTask from "/src/assets/completedTask.png";
 export default function Chat() {
-    const { roomName } = useParams();  
+    const { chatId } = useParams();
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
-    const [leaderboard, setLeaderboard] = useState([]);
-    const [currentView, setCurrentView] = useState("chat"); 
-    const [menuOpen, setMenuOpen] = useState(false); 
-    const navigate = useNavigate();
-
-    const chatRef = collection(db, "Community", roomName, "Chat");
-    const { user, data } = useContext(AuthContext);
+    const [otherUserName, setOtherUserName] = useState("Unknown");
+    const [userName, setUserName] = useState("Unknown");
+    const { user } = useContext(AuthContext);
 
     useEffect(() => {
-        if (currentView === "chat") {
-            const q = query(chatRef, orderBy("timestamp", "asc"));
-            const unsubscribe = onSnapshot(q, (snapshot) => {
-                setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-            });
-            return () => unsubscribe();
-        }
-    }, [roomName, currentView]);
+        const fetchUserData = async () => {
+            if (!user?.email) return;
+
+            const userQuery = query(collection(db, "Profile"), where("Email", "==", user.email));
+            const userSnapshot = await getDocs(userQuery);
+
+            if (!userSnapshot.empty) {
+                const userDoc = userSnapshot.docs[0];
+                setUserName(userDoc.data().Name || "Unknown");
+
+                const chatDocRef = doc(db, "Inbox", chatId);
+                const chatDoc = await getDoc(chatDocRef);
+
+                if (chatDoc.exists()) {
+                    const chatData = chatDoc.data();
+                    const otherUserId = chatData.users.find(id => id !== userDoc.id);
+
+                    if (otherUserId) {
+                        const otherUserDoc = await getDoc(doc(db, "Profile", otherUserId));
+                        if (otherUserDoc.exists()) {
+                            setOtherUserName(otherUserDoc.data().Name || "Unknown");
+                        }
+                    }
+                }
+            }
+        };
+
+        fetchUserData();
+    }, [chatId, user]);
+
+    useEffect(() => {
+        if (!chatId) return;
+
+        const chatRef = collection(db, "Inbox", chatId, "Chat");
+        const q = query(chatRef, orderBy("timestamp", "asc"));
+
+        const unsubscribe = onSnapshot(q, async (snapshot) => {
+            const messagesData = await Promise.all(snapshot.docs.map(async (docSnap) => {
+                const msgData = docSnap.data();
+                const isCurrentUser = msgData.sender === user?.uid;
+                const senderName = isCurrentUser ? userName : otherUserName;
+
+                return { id: docSnap.id, text: msgData.text, sender: senderName };
+            }));
+
+            setMessages(messagesData);
+        });
+
+        return () => unsubscribe();
+    }, [chatId, userName, otherUserName]);
 
     const handleSendMessage = async () => {
-        if (message.trim() === "") return;
-        
-        await addDoc(chatRef, {
+        if (!message.trim()) return;
+
+        await addDoc(collection(db, "Inbox", chatId, "Chat"), {
             text: message,
-            sender: data.Name,  
+            sender: user.uid,
             timestamp: serverTimestamp(),
         });
 
         setMessage("");
     };
 
-    const handleLeaveCommunity = async () => {
-        if (!user?.uid) {
-            alert("User not authenticated");
-            return;
-        }
-
-        try {
-            const userRef = doc(db, "Profile", data.id);
-            await updateDoc(userRef, {
-                joinedCommunities: arrayRemove(roomName)
-            });
-
-            alert(`You have left ${roomName}`);
-            navigate("/community");
-        } catch (error) {
-            console.error("Error leaving community:", error);
-            alert("Failed to leave the community");
-        }
-    };
-
-    const fetchLeaderboard = async () => {
-        try {
-           
-            const communityDoc = await getDoc(doc(db, "Community", roomName));
-            if (!communityDoc.exists()) {
-                console.error("Community not found");
-                return;
-            }
-            const communityHabit = communityDoc.data().habit;
-
-           
-            const profilesRef = collection(db, "Profile");
-            const q = query(profilesRef, where("joinedCommunities", "array-contains", roomName));
-            const snapshot = await onSnapshot(q, (snapshot) => {
-                const profiles = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-
-                
-                const leaderboardData = [];
-                profiles.forEach(async (profile) => {
-                    const habitsRef = collection(db, "habits");
-                    const habitsQuery = query(habitsRef, where("creator", "==", profile.id));
-                    const habitsSnapshot = await onSnapshot(habitsQuery, (habitSnapshot) => {
-                        habitSnapshot.docs.forEach((habitDoc) => {
-                            const habit = habitDoc.data();
-                            if (habit.name === communityHabit) {
-                                leaderboardData.push({
-                                    name: profile.Name,
-                                    streak: habit.streak,
-                                });
-                            }
-                        });
-                        setLeaderboard(leaderboardData);
-                    });
-                });
-            });
-        } catch (error) {
-            console.error("Error fetching leaderboard:", error);
-        }
-    };
-
-    useEffect(() => {
-        if (currentView === "leaderboard") {
-            fetchLeaderboard();
-        }
-    }, [currentView]);
-
-    const handleKeyDown = (e) => {
-        if (e.key === "Enter") {
-            handleSendMessage();
-        }
-    };
-
     return (
         <div className="chat-container">
             <div className="chat-header">
-                <h2 className="chat_title">Welcome to {roomName}</h2>
-
-                
-                <div className="view-buttons">
-                    <motion.button 
-                         whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}
-                        className={`view-btn ${currentView === "chat" ? "active" : ""}`}
-                        onClick={() => setCurrentView("chat")}
-                    >
-                        Chat
-                    </motion.button>
-                    <motion.button 
-                         whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}
-                        className={`view-btn ${currentView === "leaderboard" ? "active" : ""}`}
-                        onClick={() => setCurrentView("leaderboard")}
-                    >
-                        Leaderboard
-                    </motion.button>
-                </div>
-
-      
-                <div className="menu-container">
-                    <motion.button  whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} className="menu-btn" onClick={() => setMenuOpen(!menuOpen)}>⋮</motion.button>
-                    {menuOpen && (
-                        <div className="menu-dropdown">
-                            <motion.button  whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} className="leave-btn" onClick={handleLeaveCommunity}>Leave Community</motion.button>
-                        </div>
-                    )}
-                </div>
+                <h2 className="chat_title">Chat with {otherUserName}</h2>
             </div>
 
-            {currentView === "chat" ? (
-                <>
-                 
-                    <div className="chat-box">
-                        {messages.map((msg, i) => (
-                            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1, transition: i*0.8 }} key={msg.id}><strong>{msg.sender}: </strong>{msg.text}</motion.p>
-                        ))}
-                    </div>
+            <div className="chat-box">
+                {messages.map((msg) => (
+                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} key={msg.id}>
+                        <strong>{msg.sender}: </strong>{msg.text}
+                    </motion.p>
+                ))}
+            </div>
 
-                    
-                    <div className="input-container">
-                        <input 
-                            type="text" 
-                            value={message} 
-                            onChange={(e) => setMessage(e.target.value)} 
-                            onKeyDown={handleKeyDown}
-                            placeholder="Type a message..."
-                        />
-                        <motion.button  whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} onClick={handleSendMessage}>Send</motion.button>
-                    </div>
-                </>
-            ) : (
-<div className="leaderboard-container">
-  <div className="leaderboard-col">
-    <div className="">
-      <h3>Leaderboard</h3> 
-      
-    </div>
-    <ul className="leaderboard">
-      {leaderboard.map((entry, index) => (
-    <li key={index} className="leaderboard-li">
-    {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : ""} 
-    <strong>{entry.name}</strong>: {entry.streak} days
-</li>
-
-      ))}
-    </ul>
-                        </div>
-                      <div className="svg-div">
-<img src={completedTask} alt="Completed Task" className="leaderboard-svg" />
-</div>
-</div>
-
-            )}
+            <div className="input-container">
+                <input 
+                    type="text" 
+                    value={message} 
+                    onChange={(e) => setMessage(e.target.value)} 
+                    onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                    placeholder="Type a message..."
+                />
+                <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} onClick={handleSendMessage}>
+                    Send
+                </motion.button>
+            </div>
         </div>
     );
 }

@@ -1,87 +1,104 @@
 import { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { db } from "./firebase";
-import { getDocs, collection, query, where, doc, getDoc, setDoc } from "firebase/firestore";
+import { getDocs, collection, query, where, doc, getDoc } from "firebase/firestore";
 import { AuthContext } from "./App";
 
 export default function ChatInbox() {
     const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [docId, setDocId] = useState(null);
-    const [userInboxes, setUserInboxes] = useState([]); // Store multiple inboxes
+    const [chatPartners, setChatPartners] = useState([]);
 
     useEffect(() => {
-        const fetchDocId = async () => {
-            if (user?.email) {
-                console.log("Checking Firestore for email:", user.email);
+        if (!user?.email) return;
 
+        const fetchDocId = async () => {
+            try {
+                console.log("Checking Firestore for email:", user.email);
                 const q = query(collection(db, "Profile"), where("Email", "==", user.email));
                 const querySnapshot = await getDocs(q);
 
                 if (!querySnapshot.empty) {
-                    const document = querySnapshot.docs[0]; 
-                    const userDocId = document.id;
+                    const userDocId = querySnapshot.docs[0].id;
                     setDocId(userDocId);
                     console.log("User's Document ID:", userDocId);
-
-                    // 🔥 Check all inboxes where this user is present
-                    await checkUserInInbox(userDocId);
+                    await fetchUserChats(userDocId);
                 } else {
                     console.log("No matching Profile document found.");
                 }
+            } catch (error) {
+                console.error("Error fetching user document:", error);
             }
         };
 
-        const checkUserInInbox = async (userDocId) => {
-            const inboxRef = collection(db, "Inbox");
-            const inboxQuery = await getDocs(inboxRef);
-            
-            let matchedInboxes = []; // Temporary array to store all matches
+        const fetchUserChats = async (userDocId) => {
+            try {
+                const inboxRef = collection(db, "Inbox");
+                const inboxQuery = await getDocs(inboxRef);
+                let partners = [];
 
-            if (inboxQuery.empty) {
-                console.log("⚠️ No Inbox documents found. Creating one...");
-
-                // 🔥 Create a new Inbox document with the user
-                const newInboxRef = doc(collection(db, "Inbox")); // Generate new doc ID
-                await setDoc(newInboxRef, {
-                    users: [userDocId],
-                    messages: [],
-                    timestamp: new Date()
-                });
-
-                console.log("✅ New Inbox document created:", newInboxRef.id);
-                matchedInboxes.push(newInboxRef.id);
-            } else {
-                // 🔍 Check all inboxes where user exists
-                inboxQuery.forEach((inboxDoc) => {
-                    console.log("📩 Inbox Document Found:", inboxDoc.id);
+                for (const inboxDoc of inboxQuery.docs) {
                     const inboxData = inboxDoc.data();
 
-                    if (inboxData.users && inboxData.users.includes(userDocId)) {
-                        console.log("✅ User is in Inbox:", inboxDoc.id);
-                        matchedInboxes.push(inboxDoc.id);
-                    }
-                });
-            }
+                    if (inboxData.users?.includes(userDocId)) {
+                        console.log("📩 User found in Inbox:", inboxDoc.id);
+                        const otherUserId = inboxData.users.find(id => id !== userDocId);
 
-            // Set all matched inboxes in state
-            setUserInboxes(matchedInboxes);
+                        if (otherUserId) {
+                            const otherUserDoc = await getDoc(doc(db, "Profile", otherUserId));
+                            if (otherUserDoc.exists()) {
+                                partners.push({
+                                    inboxId: inboxDoc.id, // Store Inbox ID
+                                    name: otherUserDoc.data().Name || otherUserDoc.data().Email
+                                });
+                            }
+                        }
+                    }
+                }
+                setChatPartners(partners);
+            } catch (error) {
+                console.error("Error fetching chat partners:", error);
+            }
         };
 
         fetchDocId();
     }, [user]);
 
+    const handleChatClick = (inboxId) => {
+        navigate(`/chat/${inboxId}`);
+    };
+
     return (
         <div>
             <h1>Inbox</h1>
             <p>Profile Document ID: {docId || "Not Found"}</p>
-            <h2>Matching Inboxes:</h2>
-            {userInboxes.length > 0 ? (
-                <ul>
-                    {userInboxes.map((inboxId) => (
-                        <li key={inboxId}>📩 {inboxId}</li>
+            <h2>Chatting With:</h2>
+            {chatPartners.length > 0 ? (
+                <ul style={{ listStyleType: "none", padding: 0 }}>
+                    {chatPartners.map((partner) => (
+                        <li key={partner.inboxId} onClick={() => handleChatClick(partner.inboxId)} style={{ marginBottom: "10px" }}>
+                            <div
+                                style={{
+                                    padding: "10px",
+                                    backgroundColor: "#f0f0f0",
+                                    borderRadius: "8px",
+                                    cursor: "pointer",
+                                    transition: "0.3s",
+                                    textAlign: "center",
+                                    fontWeight: "bold",
+                                    boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.1)"
+                                }}
+                                onMouseOver={(e) => (e.target.style.backgroundColor = "#e0e0e0")}
+                                onMouseOut={(e) => (e.target.style.backgroundColor = "#f0f0f0")}
+                            >
+                                📩 {partner.name} 
+                            </div>
+                        </li>
                     ))}
                 </ul>
             ) : (
-                <p>No Inboxes Found ❌</p>
+                <p>Loading.....</p>
             )}
         </div>
     );

@@ -55,7 +55,7 @@ function Layout() {
         <Route path="/Signup" element={user ? <Navigate to="/Home" /> : <Signup />} />
         <Route path="/Home" element={user ? <Home /> : <Navigate to="/Signin" />} />
         <Route path="/Profile" element={user ? <Profile /> : <Navigate to="/Signin" />} />
-        <Route path="/chat/:roomName" element={user ? <Chat /> : <Navigate to="/Signin" />} />
+        <Route path="/chat/:chatId" element={user ? <Chat /> : <Navigate to="/Signin" />} />
         <Route path="/MyProducts" element={user ? <MyProducts /> : <Navigate to="/Signin" />} />
         <Route path="/ChatInbox" element={user ? <ChatInbox /> : <Navigate to="/Signin" />} />
         <Route path="/Recycle" element={user ? <Recycle /> : <Navigate to="/Signin" />} />
