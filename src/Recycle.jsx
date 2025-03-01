@@ -1,35 +1,38 @@
 import React, { useState, useEffect, useContext } from "react";
 import { collection, getDocs, addDoc } from "firebase/firestore";
-import { db } from "./firebase"; 
-import { AuthContext } from "./App"; 
+import { db } from "./firebase";
+import { AuthContext } from "./App";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+
+const cityCoordinates = {
+  Margao: { lat: 15.2993, lng: 74.124 },
+  Panjim: { lat: 15.4968, lng: 73.8278 },
+  Vasco: { lat: 15.3959, lng: 73.8157 },
+  Mapusa: { lat: 15.5915, lng: 73.8087 },
+};
 
 export default function Recycle() {
   const { user } = useContext(AuthContext);
   const [recycleListing, setRecycleListing] = useState({
     email: user?.email || "",
     name: user?.name || "",
-    longitude: user?.longitude || 15.8051,
-    latitude: user?.latitude || 73.996559,
+    city: "",
     price: "",
     minWeight: "",
-    status: false, // true if another person accepts the offer
+    status: false,
   });
   const [listings, setListings] = useState([]);
-  const [isRecycleCenter, setIsRecycleCenter] = useState(false);
-  const [showForm, setShowForm] = useState(false); // To toggle form visibility
+  const [mapCenter, setMapCenter] = useState(cityCoordinates.Margao);
+  const [showForm, setShowForm] = useState(false);
 
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyBehEghFrkAKZ7EE3z4YJ5dOHAbxMURZBQ", // Replace with your API key
+    googleMapsApiKey: "AIzaSyBehEghFrkAKZ7EE3z4YJ5dOHAbxMURZBQ", 
   });
 
   useEffect(() => {
-    if (user?.is_recycle_center) {
-      setIsRecycleCenter(true);
-    }
-  }, [user]);
+    fetchItems();
+  }, []);
 
-  // Fetch listings from Firestore
   const fetchItems = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "recycleListings"));
@@ -43,192 +46,105 @@ export default function Recycle() {
     }
   };
 
-  // Add a new listing to Firestore
   const addItem = async () => {
+    if (!cityCoordinates[recycleListing.city]) {
+      alert("Please select a valid city.");
+      return;
+    }
+
     try {
       await addDoc(collection(db, "recycleListings"), {
         ...recycleListing,
+        latitude: cityCoordinates[recycleListing.city].lat,
+        longitude: cityCoordinates[recycleListing.city].lng,
       });
       setRecycleListing({
         email: user?.email || "",
         name: user?.name || "",
-        longitude: user?.longitude || "",
-        latitude: user?.latitude || "",
+        city: "",
         price: "",
         minWeight: "",
         status: false,
       });
-      setShowForm(false); // Hide form after adding the listing
-      fetchItems(); // Refresh the list after adding a new item
+      setShowForm(false);
+      fetchItems();
     } catch (e) {
       console.error("Failed to add item:", e);
     }
-  };
-
-  // Fetch listings when the component mounts
-  useEffect(() => {
-    fetchItems();
-  }, []);
-
-  // Handle input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setRecycleListing((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const mapContainerStyle = {
-    width: "100%",
-    height: "400px",
-    marginBottom: "20px",
-  };
-
-  const defaultCenter = {
-    lat: recycleListing.latitude,
-    lng: recycleListing.longitude,
   };
 
   return (
     <div style={{ padding: "20px" }}>
       <h1 style={{ textAlign: "center" }}>Recycle Listings</h1>
 
-      {/* Map Section */}
       {isLoaded && (
         <GoogleMap
-          mapContainerStyle={mapContainerStyle}
-          center={defaultCenter}
-          zoom={10}
+          mapContainerStyle={{ width: "100%", height: "400px", marginBottom: "20px" }}
+          center={mapCenter}
+          zoom={12}
         >
           {listings.map((listing) => (
             <Marker
               key={listing.id}
-              position={{
-                lat: parseFloat(listing.latitude),
-                lng: parseFloat(listing.longitude),
-              }}
-              title={listing.name || "Unnamed Plant"}
+              position={{ lat: listing.latitude, lng: listing.longitude }}
+              title={listing.name}
             />
           ))}
         </GoogleMap>
       )}
 
-      {/* Display all listings */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", marginTop: "20px" }}>
         {listings.map((listing) => (
           <div
             key={listing.id}
+            onClick={() => setMapCenter(cityCoordinates[listing.city])}
             style={{
               border: "1px solid #ccc",
               borderRadius: "10px",
               padding: "15px",
               width: "250px",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              cursor: "pointer",
               backgroundColor: "#f9f9f9",
             }}
           >
-            <h3 style={{ marginBottom: "10px" }}>{listing.name || "Unnamed Plant"}</h3>
+            <h3>{listing.name}</h3>
+            <p><strong>City:</strong> {listing.city}</p>
             <p><strong>Price:</strong> {listing.price}</p>
-            <p><strong>Minimum Weight:</strong> {listing.minWeight}</p>
-            <p>
-              <strong>Status:</strong> {listing.status ? "Accepted" : "Pending"}
-            </p>
+            <p><strong>Min Weight:</strong> {listing.minWeight}</p>
+            <p><strong>Status:</strong> {listing.status ? "Accepted" : "Pending"}</p>
           </div>
         ))}
       </div>
 
-      {/* Show the Add (+) button and form only for users with is_recycle_center set to true */}
-      {isRecycleCenter && (
+      {true && (
         <div style={{ marginTop: "20px", textAlign: "center" }}>
-          {/* Add (+) Button */}
           {!showForm && (
-            <button
-              onClick={() => setShowForm(true)}
-              style={{
-                marginTop: "10px",
-                backgroundColor: "#28a745",
-                color: "white",
-                border: "none",
-                padding: "10px 20px",
-                borderRadius: "5px",
-                fontSize: "20px",
-                cursor: "pointer",
-              }}
-            >
-              +
-            </button>
+            <button onClick={() => setShowForm(true)} style={{ backgroundColor: "#28a745", color: "white", padding: "10px 20px", borderRadius: "5px" }}>+</button>
           )}
 
-          {/* Form to add a new listing (visible only when showForm is true) */}
           {showForm && (
             <div style={{ marginTop: "20px" }}>
               <h2>Add a New Listing</h2>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  addItem();
-                }}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
-              >
+              <form onSubmit={(e) => { e.preventDefault(); addItem(); }} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+                <div>
+                  <label>City:</label>
+                  <select name="city" value={recycleListing.city} onChange={(e) => setRecycleListing({ ...recycleListing, city: e.target.value })} required>
+                    <option value="">Select a city</option>
+                    {Object.keys(cityCoordinates).map((city) => (
+                      <option key={city} value={city}>{city}</option>
+                    ))}
+                  </select>
+                </div>
                 <div>
                   <label>Price:</label>
-                  <input
-                    type="text"
-                    name="price"
-                    value={recycleListing.price}
-                    onChange={handleInputChange}
-                    required
-                    style={{ marginLeft: "10px" }}
-                  />
+                  <input type="text" name="price" value={recycleListing.price} onChange={(e) => setRecycleListing({ ...recycleListing, price: e.target.value })} required />
                 </div>
                 <div>
-                  <label>Minimum Weight:</label>
-                  <input
-                    type="text"
-                    name="minWeight"
-                    value={recycleListing.minWeight}
-                    onChange={handleInputChange}
-                    required
-                    style={{ marginLeft: "10px" }}
-                  />
+                  <label>Min Weight:</label>
+                  <input type="text" name="minWeight" value={recycleListing.minWeight} onChange={(e) => setRecycleListing({ ...recycleListing, minWeight: e.target.value })} required />
                 </div>
-                <div style={{ display: "flex", gap: "10px" }}>
-                  <button
-                    type="submit"
-                    style={{
-                      backgroundColor: "#28a745",
-                      color: "white",
-                      border: "none",
-                      padding: "10px 20px",
-                      borderRadius: "5px",
-                      fontSize: "16px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Add Listing
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowForm(false)}
-                    style={{
-                      backgroundColor: "#dc3545",
-                      color: "white",
-                      border: "none",
-                      padding: "10px 20px",
-                      borderRadius: "5px",
-                      fontSize: "16px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
+                <button type="submit" style={{ backgroundColor: "#28a745", color: "white", padding: "10px 20px", borderRadius: "5px" }}>Add Listing</button>
+                <button type="button" onClick={() => setShowForm(false)} style={{ backgroundColor: "#dc3545", color: "white", padding: "10px 20px", borderRadius: "5px" }}>Cancel</button>
               </form>
             </div>
           )}
