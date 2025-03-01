@@ -40,7 +40,7 @@ button{
 .input-container button {
   margin-left: 10px;
   padding: 10px 15px;
-  background-color: #4c5fd5;
+  background-color: black;
   color: white;
   border: none;
   border-radius: 5px;
@@ -50,6 +50,18 @@ button{
   border: none;
 }
 
+.input-container button:hover {
+  margin-left: 10px;
+  padding: 10px 15px;
+ color: black;
+   background-color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  outline: none;
+  border: none;
+}
 .chat-header {
   display: flex;
   justify-content: space-between;

@@ -208,7 +208,7 @@ const handleDeleteAccount = () => {
 
   return (
     <motion.div className="profile-screen" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: 2 }}>
-      <motion.div className="profile-container" animate={{ y: isChangingPassword ? 95 : 0 }}>
+      <motion.div className="profile-container" animate={{ y: isChangingPassword ? 130 : 10 }}>
         <div className="profile-picture">{getInitials(name)}</div>
         <div className="form-container">
           {errorMessage && <div className="error-message">{errorMessage}</div>}
@@ -258,7 +258,7 @@ const handleDeleteAccount = () => {
             Delete Account
           </motion.button>
         <div className="form-group">
-  <label>Upload Document</label>
+  <label className='upload'>Upload Document</label>
   <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileChange} />
   <motion.button 
     whileTap={{ scale: 0.9 }} 

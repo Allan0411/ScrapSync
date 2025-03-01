@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { db } from './firebase';
 import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { AuthContext } from './App';
-
+import { motion } from "motion/react";
 const MyProducts = () => {
   const { user } = useContext(AuthContext);
   const [item, setItem] = useState({
@@ -238,20 +238,25 @@ const MyProducts = () => {
     <div className="listing parent">
       <div className="listing-container">
         <h1 className="title">{text[language].title}</h1>
-        <button
+        <motion.button
           onClick={toggleLanguage}
           className="language"
+          whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}
         >
           {language === "en" ? "हिन्दी" : "English"}
-        </button>
+        </motion.button>
       </div>
 
       {/* Active Items List */}
       <div className="list-item-list">
         {items
           .filter((item) => !item.hasCollected) // Show only active (not collected) items
-          .map((item) => (
-            <div key={item.id} className="list-item">
+          .map((item, i) => (
+            <motion.div key={item.id} className="list-item"
+              initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: i * 0.2 }}
+       whileHover={{ scale: 1.04, transition: { duration: 0.2 } }} >
               <img
                 src={item.imageURL}
                 alt="Item"
@@ -284,30 +289,33 @@ const MyProducts = () => {
                 {text[language].status}: {item.status ? "Active" : "Inactive"}
               </p>
               <div className="list-location">
-                <button
+                <motion.button
                   onClick={() => deleteItem(item.id)}
                   className="cancel"
+                  whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}
                 >
                   ✕
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   onClick={() => markAsDone(item.id)}
                   className="markasdone"
+                  whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}
                 >
                   {text[language].markAsDone}
-                </button>
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
           ))}
       </div>
 
       {/* Floating Plus Button */}
-      <button
+      <motion.button
         onClick={() => setIsModalOpen(true)}
         className="add-modal"
+whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}
       >
         +
-      </button>
+      </motion.button>
 
       {/* Modal for Adding Item */}
       {isModalOpen && (
@@ -421,19 +429,21 @@ const MyProducts = () => {
                 />
               </div>
               <div className="flex justify-end space-x-4">
-                <button
+                <motion.button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
                   className="cancel"
+                  whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}
                 >
                   {text[language].cancelButton}
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   type="submit"
                   className="add"
+                  whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}
                 >
                   {text[language].addButton}
-                </button>
+                </motion.button>
               </div>
             </form>
           </div>
