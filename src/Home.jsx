@@ -3,6 +3,7 @@ import { db } from "./firebase";
 import { collection, getDocs,query,where,addDoc } from "firebase/firestore";
 import { AuthContext } from "./App";
 import { useNavigate } from "react-router-dom";
+import { motion } from "motion/react";
 const HomePage = () => {
   const { user } = useContext(AuthContext);
   const [items, setItems] = useState([]);
@@ -177,12 +178,12 @@ const redirectToChat = (chatId) => {
     <div className="home">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Scrap Market</h1>
-        <button
+        <motion.button
           onClick={toggleLanguage}
           className="language"
         >
           {language === "en" ? "हिन्दी" : "English"}
-        </button>
+        </motion.button>
       </div>
 
       {/* Search Bar */}
@@ -201,46 +202,54 @@ const redirectToChat = (chatId) => {
         {filteredItems.length === 0 ? (
           <p>{text[language].noItems}</p>
         ) : (
-          filteredItems.map((item) => (
-            <div
-              key={item.id}
+          filteredItems.map((item, i) => (
+            <motion.div
+              key={item.id}  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: i * 0.2 }}
+       whileHover={{ scale: 1.04, transition: { duration: 0.1 } }} 
               className="grid-element cursor-pointer"
               onClick={() => setSelectedItem(item)}
+
             >
               <img src={item.imageURL} alt="Item" className="image" />
-              <h2 className="font-semibold mt-2">
+              {/* <h2 className="font-semibold mt-2">
                 {text[language].location}: {translatedItems[item.id]?.location || item.location || "N/A"}
-              </h2>
-              <p>
+              </h2> */}
+              {/* <p>
                 {text[language].pickupDate}: {new Date(item.pickupDate).toLocaleString()}
-              </p>
+              </p> */}
               <p>
-                {text[language].price}: ${item.price || "N/A"}
+                {text[language].price}: ₹{item.price || "N/A"}
               </p>
               <p>
                 {text[language].wasteType}: {translatedItems[item.id]?.wasteType || item.wasteType || "N/A"}
               </p>
-            </div>
+            </motion.div>
           ))
         )}
       </div>
 
     {selectedItem && (
         <div className="modal">
-             <button
+             <motion.button
               className="modal-button"
-              onClick={() => setSelectedItem(null)} 
+            onClick={() => setSelectedItem(null)} 
+                whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}
             >
               Close
-            </button>
+            </motion.button>
           <div className="modal-image">
                     <img src={selectedItem.imageURL} alt="Item" className="image" />
           </div>
-          <button className="buy-button" onClick={()=>handleChat(selectedItem)}>Chat With</button>
+          <motion.button className="buy-button" onClick={() => handleChat(selectedItem)}
+          
+              whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}
+          >Chat With</motion.button>
           <div className="text">
            <p>Location: {selectedItem.location} </p>
             <p>Pickup Date: {new Date(selectedItem.pickupDate).toLocaleString()}</p>
-            <p>Price: ${selectedItem.price}</p>
+            <p>Price: ₹{selectedItem.price}</p>
             <p>Waste Type: {selectedItem.wasteType}</p>
          
           </div>

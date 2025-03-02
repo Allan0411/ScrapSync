@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { db } from './firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { AuthContext } from './App';
-
+import { motion } from "motion/react";
 const History = () => {
   const { user } = useContext(AuthContext);
   const [items, setItems] = useState([]);
@@ -116,8 +116,13 @@ const History = () => {
         {items.length === 0 ? (
           <p>{text[language].noHistory}</p>
         ) : (
-          items.map((item) => (
-            <div key={item.id} className="history-list-item">
+          items.map((item, i) => (
+            <motion.div key={item.id} className="history-list-item"
+            initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: i * 0.2 }}
+       whileHover={{ scale: 1.04, transition: { duration: 0.1 } }} 
+            >
               <img
                 src={item.imageURL}
                 alt="Item (History)"
@@ -143,7 +148,7 @@ const History = () => {
               <p>
                 {text[language].historyTimestamp}: {new Date(item.historyTimestamp).toLocaleString()}
               </p>
-            </div>
+            </motion.div>
           ))
         )}
       </div>
